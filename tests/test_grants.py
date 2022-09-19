@@ -1,6 +1,6 @@
 from grants import create_app, db
 import pytest
-from grants.models import Household
+from grants.models import Household, Person
 
 
 @pytest.fixture
@@ -11,6 +11,26 @@ def client():
         with app.test_client() as test_app:
             yield test_app
         db.drop_all()
+
+
+@pytest.fixture
+def household():
+    household = Household(housing_type='Landed')
+    return household
+
+
+@pytest.fixture
+def person():
+    person = Person(
+        name = 'Jonathan Yao',
+        gender = 'M',
+        marital_status = 'Single',
+        spouse_id = None,
+        occupation_type = 'Employed',
+        annual_income = '12000',
+        date_of_birth = '08-12-1997'
+    )
+    return person
 
 
 @pytest.mark.parametrize('housing_type', ['Landed', 'Condominium', 'HDB'])
@@ -34,3 +54,30 @@ def test_create_household_wrong_housing_type(client):
 
     household = Household.query.filter_by(housing_type='Pulau Ubin').first()
     assert household is None
+
+
+def test_add_person_to_household(client, household, person):
+    db.session.add(household)
+    db.session.commit()
+
+    data = {
+        'Name': person.name,
+        'Gender': person.gender,
+        'MaritalStatus': person.marital_status,
+        'Spouse': person.spouse_id,
+        'OccupationType': person.occupation_type,
+        'AnnualIncome': person.annual_income,
+        'DOB': person.date_of_birth,
+    }
+    print(f'/household/{household.id}/family/new')
+    response = client.post(f'/household/{household.id}/family/new', data=data)
+    assert response.status_code == 200
+
+    # Test that family member has been created
+    family_member = Person.query.filter_by(name=person.name).first()
+    assert family_member is not None
+
+    # Test that household has the created family member
+    db.session.refresh(household)
+    household_family_member = household.family_members[0]
+    assert family_member is household_family_member
