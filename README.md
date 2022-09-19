@@ -12,11 +12,13 @@ This document outlines the requirements of the API as understood by myself and l
 
 ```markdown
 1. Create Household
+    Route: '/household/new'
     Type: 'POST'
     Params: 
         String: 'Housing Type' => {'Landed', 'Condominium', 'HDB'}
 
 2. Add a family member to household
+    Route: '/household/{id}/family/new'
     Type: 'POST'
     Params:
         String: 'Name'
@@ -32,6 +34,7 @@ This document outlines the requirements of the API as understood by myself and l
         Date: 'DOB'
 
 3. List all households
+    Route: '/household/all'
     Type: 'GET'
     Params: None
     Response Format:
@@ -58,6 +61,7 @@ This document outlines the requirements of the API as understood by myself and l
 
 **TODO: Add more params that are relevant**
 4. Search for a specific household
+    Route: '/household/search'
     Type: 'GET'
     Params:
         String: 'HouseholdType'
@@ -71,6 +75,7 @@ This document outlines the requirements of the API as understood by myself and l
         [Assumption: Since this is a search endpoint, it returns all the households which match the params given (AND-Based Matching, i.e. all given params must match)]
 
 5. List the households and qualifying family members of a grant disbursement
+    Route: '/household/grants'
     Type: 'GET'
     Params:
         String: 'Grant Type' => {'Student Encouragement Bonus', 'Multigeneration Scheme', 'Elder Bonus', 'Baby Sunshine Grant', 'YOLO GST Grant'}
