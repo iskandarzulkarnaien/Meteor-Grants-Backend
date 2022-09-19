@@ -1,0 +1,11 @@
+# Byte-compiled files
+__pycache__/
+
+# Distribution / Packaging
+*.egg-info/
+
+# Environments
+venv/
+
+# Testing
+.coverage
