@@ -6,7 +6,7 @@ db = SQLAlchemy()
 
 def create_app(test=False):
     app = Flask(__name__)
-    
+
     if test:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../../tests/test.site.sqlite'
     else:
