@@ -114,3 +114,10 @@ This document outlines the requirements of the API as understood by myself and l
     Qualifying:
     - All members
 ```
+
+## Database Schema
+
+The database schema is as shown in the following diagram:
+
+![Schema Diagram](./readme_assets/schema_diagram.png)
+<em>Note: person.spouse to person.id is supposed to be 1 to [0, 1] instead of 1 to 1 as it is possible for spouse to be null<em>
