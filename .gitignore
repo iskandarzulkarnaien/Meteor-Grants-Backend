@@ -12,6 +12,5 @@ venv/
 
 # Testing
 .coverage
-.mypy_cache/
 .pytest_cache/
 .tox/
