@@ -12,6 +12,7 @@ class Household(db.Model):
         assert housing_type in {'Landed', 'Condominium', 'HDB'}
         return housing_type
 
+
 class Person(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -27,6 +28,6 @@ class Person(db.Model):
     occupation_type = db.Column(db.String, nullable=False)
     annual_income = db.Column(db.Float, nullable=False)
     date_of_birth = db.Column(db.Date, nullable=False)
-    
+
     household_id = db.Column(db.Integer, db.ForeignKey('household.id'))
     household = db.relationship('Household', back_populates='family_members')

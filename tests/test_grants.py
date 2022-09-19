@@ -22,13 +22,13 @@ def household():
 @pytest.fixture
 def person():
     person = Person(
-        name = 'Jonathan Yao',
-        gender = 'M',
-        marital_status = 'Single',
-        spouse_id = None,
-        occupation_type = 'Employed',
-        annual_income = '12000',
-        date_of_birth = '08-12-1997'
+        name='Jonathan Yao',
+        gender='M',
+        marital_status='Single',
+        spouse_id=None,
+        occupation_type='Employed',
+        annual_income='12000',
+        date_of_birth='08-12-1997'
     )
     return person
 
