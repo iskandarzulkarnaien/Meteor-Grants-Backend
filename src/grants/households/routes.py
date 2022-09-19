@@ -21,8 +21,6 @@ def create_household():
 
 @households.route('/household/<int:household_id>/family/new', methods=['POST'])
 def add_person_to_household(household_id):
-    household = Household.query.get(household_id)
-
     name = request.form.get('Name')
     gender = request.form.get('Gender')
     marital_status = request.form.get('MaritalStatus')
@@ -33,7 +31,7 @@ def add_person_to_household(household_id):
     date_of_birth_str = request.form.get('DOB')
     date_of_birth = datetime.strptime(date_of_birth_str, '%d-%m-%Y')
 
-    person = Person(name=name, gender=gender, marital_status=marital_status, spouse_id=spouse_id, occupation_type=occupation_type, \
+    person = Person(name=name, gender=gender, marital_status=marital_status, spouse_id=spouse_id, occupation_type=occupation_type,
                     annual_income=annual_income, date_of_birth=date_of_birth, household_id=household_id)
     db.session.add(person)
     db.session.commit()
