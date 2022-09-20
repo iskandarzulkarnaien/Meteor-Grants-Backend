@@ -60,16 +60,8 @@ def test_add_person_to_household(client, household, person):
     db.session.add(household)
     db.session.commit()
 
-    data = {
-        'Name': person.name,
-        'Gender': person.gender,
-        'MaritalStatus': person.marital_status,
-        'Spouse': person.spouse_id,
-        'OccupationType': person.occupation_type,
-        'AnnualIncome': person.annual_income,
-        'DOB': person.date_of_birth,
-    }
-    print(f'/household/{household.id}/family/new')
+    data = person.to_json()
+
     response = client.post(f'/household/{household.id}/family/new', data=data)
     assert response.status_code == 200
 
