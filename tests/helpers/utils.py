@@ -19,6 +19,10 @@ class PersonBuilder():
     def create_generic_person():
         pass
 
+    def name(self, name):
+        self.person.name = name
+        return self
+
     # Gender Related
     def gender_male(self):
         self.person.gender = 'M'
@@ -38,7 +42,8 @@ class PersonBuilder():
 
     def married(self, spouse=None):
         self.person.marital_status = 'Married'
-        # TODO: Set spouse behavior
+        if spouse:
+            self.person.spouse_id = spouse.id
         return self
 
     def widowed(self, spouse=None):
@@ -100,16 +105,15 @@ class PersonBuilder():
             self.person.gender = Utils.get_random(Person.valid_genders())
 
         # TODO: Generate male and female names respectively
-        if self.person.gender == 'M':
-            self.person.name = self.fake.name()
+        if self.person.name is None:
+            if self.person.gender == 'M':
+                self.person.name = self.fake.name()
 
-        if self.person.gender == 'F':
-            self.person.name = self.fake.name()
+            if self.person.gender == 'F':
+                self.person.name = self.fake.name()
 
         if not self.person.marital_status:
             self.person.marital_status = 'Single'
-
-        # TODO: Spouse behavior
 
         if self.person.occupation_type is None:
             self.person.occupation_type = Utils.get_random(Person.valid_occupation_types())
@@ -129,6 +133,10 @@ class PersonBuilder():
         db.session.add(person)
         db.session.commit()
 
+        if person.spouse_id:
+            spouse = Person.query.get(person.spouse_id)
+            spouse.spouse_id = person.id
+            db.session.commit()
         return person
 
 
