@@ -32,6 +32,11 @@ class Person(db.Model):
     household_id = db.Column(db.Integer, db.ForeignKey('household.id'), nullable=False)
     household = db.relationship('Household', back_populates='family_members')
 
+    @validates('gender')
+    def validate_gender(self, _, gender):
+        assert gender in {'M', 'F'}
+        return gender
+
     def to_json(self):
         return {
             'Name': self.name,
