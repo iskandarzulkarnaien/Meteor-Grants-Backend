@@ -23,9 +23,9 @@ This document outlines the requirements of the API as understood by myself and l
         String: 'Name'
         String: 'Gender' => {'M', 'F'} 
         [Assumption: M/F only]
-        String: 'MaritalStatus' => {'Single', 'Married', 'Divorced'}
+        String: 'MaritalStatus' => {'Single', 'Married', 'Widowed', 'Separated', 'Divorced', 'Not Reported'}
         [Assumption: Lack of spacing between 'Marital' and 'Status' is intentional, similar assumptions made for other variables regarding spacing as referenced from assignment document]
-        [Assumption: Single/Married/Divorced]
+        [Assumption: Marital Statuses conform to the following standard: https://www.singstat.gov.sg/-/media/files/standards_and_classifications/scms.ashx]
         Integer: 'Spouse'
         [Assumption: Primary key of 'Persons' table]
         String: 'OccupationType' => {'Unemployed', 'Student', 'Employed'}

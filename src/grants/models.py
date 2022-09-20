@@ -68,7 +68,7 @@ class Person(db.Model):
 
     @staticmethod
     def valid_marital_statuses():
-        return {'Single', 'Married', 'Divorced'}
+        return {'Single', 'Married', 'Widowed', 'Separated', 'Divorced', 'Not Reported'}
 
     @staticmethod
     def valid_occupation_types():
