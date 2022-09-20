@@ -1,7 +1,9 @@
 from grants import db
 from grants.models import Person, Household
 from faker import Faker
-from random import shuffle
+from random import shuffle, randint
+from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
 
 
 class PersonBuilder():
@@ -12,7 +14,6 @@ class PersonBuilder():
         self.person.household_id = household.id
 
         self.fake = Faker()
-        Faker.seed('123')
 
     @staticmethod
     def create_generic_person():
@@ -20,16 +21,36 @@ class PersonBuilder():
 
     # Gender Related
     def gender_male(self):
-        pass
+        self.person.gender = 'M'
+        return self
 
     def gender_female(self):
-        pass
+        self.person.gender = 'F'
+        return self
 
     def gender_invalid(self):
-        pass
+        self.person.gender = ''
+        return self
 
     # Marital Status Related
-    def marital_status(self, spouse=None):
+    def single(self):
+        pass
+
+    def married(self, spouse=None):
+        self.person.marital_status = 'Married'
+        # TODO: Set spouse behavior
+        return self
+
+    def widowed(self, spouse=None):
+        pass
+
+    def separated(self, spouse=None):
+        pass
+
+    def divorced(self, spouse=None):
+        pass
+
+    def marital_status_not_reported(self):
         pass
 
     # Occupation Type Related
@@ -37,46 +58,60 @@ class PersonBuilder():
         pass
 
     def student(self):
-        pass
+        self.person.occupation_type = 'Student'
+        self.person.annual_income = 0
+        return self
 
-    def employed(self):
-        pass
-
-    # Annual Income Related
-    def annual_income(self, lower_bound=None, upper_bound=None):
-        pass
+    def employed(self, annual_income=50000):
+        self.person.occupation_type = 'Employed'
+        self.person.annual_income = annual_income
+        return self
 
     # Age Related
     def baby(self):
         pass
 
-    def teenager(self):
-        pass
+    def teenager(self, age=None):
+        if not age:
+            age = randint(10, 16)  # Note: start age arbitrarily chosen
 
-    def adult(self):
-        pass
+        self.person.date_of_birth = Utils.get_date_of_birth_from_age(age)
+        return self
+
+    def adult(self, age=None):
+        if not age:
+            age = randint(18, 55)
+
+        self.person.date_of_birth = Utils.get_date_of_birth_from_age(age)
+        return self
 
     def elder(self):
         pass
 
+    # TODO: Throw exception on failure to provide certain fields.
     def create(self):
-        self.person.name = self.fake.name()
-
-        if not self.person.gender:
+        if self.person.gender is None:
             self.person.gender = Utils.get_random(Person.valid_genders())
 
+        # TODO: Generate male and female names respectively
+        if self.person.gender == 'M':
+            self.person.name = self.fake.name()
+
+        if self.person.gender == 'F':
+            self.person.name = self.fake.name()
+
         if not self.person.marital_status:
-            self.person.marital_status = Utils.get_random(Person.valid_marital_statuses())
+            self.person.marital_status = 'Single'
 
         # TODO: Spouse behavior
 
-        if not self.person.occupation_type:
+        if self.person.occupation_type is None:
             self.person.occupation_type = Utils.get_random(Person.valid_occupation_types())
 
-        if not self.person.annual_income:
+        if self.person.annual_income is None:
             self.person.annual_income = 12000  # TODO: Generate random income here
 
-        if not self.person.date_of_birth:
+        if self.person.date_of_birth is None:
             self.person.date_of_birth = '1997-08-12'  # TODO: Generate random age here
 
         return self.person
@@ -132,3 +167,16 @@ class Utils():
         values = list(set)
         shuffle(values)
         return values.pop()
+
+    def get_date_of_birth_from_age(age, years=True):
+        # Person could be exactly 1 day from turning age+1 years old
+        earliest_birthdate = date.today() - relativedelta(years=age+1) + timedelta(days=1)
+
+        # Person could be exactly age years old
+        latest_birthdate = date.today() - relativedelta(years=age)
+
+        days_between_dates = (latest_birthdate - earliest_birthdate).days
+        random_number_of_days = randint(0, days_between_dates)
+
+        date_of_birth = earliest_birthdate + timedelta(days=random_number_of_days)
+        return date_of_birth
