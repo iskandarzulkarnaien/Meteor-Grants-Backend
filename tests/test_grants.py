@@ -26,9 +26,19 @@ def household():
 
 
 @pytest.fixture
+def household_saved():
+    return HouseholdBuilder().create_and_write()
+
+
+@pytest.fixture
 def person(household):
     person = PersonBuilder(household).create()
     return person
+
+
+@pytest.fixture
+def person_saved(household):
+    return PersonBuilder(household).create_and_write()
 
 
 # Tests For API 1
@@ -57,13 +67,10 @@ def test_create_household_wrong_housing_type(client):
 
 
 # Tests for API 2
-def test_add_person_to_household_success(client, household, person):
-    db.session.add(household)
-    db.session.commit()
-
+def test_add_person_to_household_success(client, household_saved, person):
     data = person.to_json()
 
-    response = client.post(url_for('households.add_person_to_household', household_id=household.id), data=data)
+    response = client.post(url_for('households.add_person_to_household', household_id=household_saved.id), data=data)
     assert response.status_code == 200
 
     # Test that family member has been created
@@ -71,8 +78,8 @@ def test_add_person_to_household_success(client, household, person):
     assert family_member is not None
 
     # Test that household has the created family member
-    db.session.refresh(household)
-    household_family_member = household.family_members[0]
+    db.session.refresh(household_saved)
+    household_family_member = household_saved.family_members[0]
     assert family_member is household_family_member
 
 
@@ -87,57 +94,45 @@ def test_add_person_to_household_wrong_household_does_not_exist(client, househol
     assert family_member is None
 
 
-def test_add_person_to_household_wrong_gender(client, household, person):
-    db.session.add(household)
-    db.session.commit()
-
+def test_add_person_to_household_wrong_gender(client, household_saved, person):
     data = person.to_json()
     data['Gender'] = ''
 
-    response = client.post(url_for('households.add_person_to_household', household_id=household.id), data=data)
+    response = client.post(url_for('households.add_person_to_household', household_id=household_saved.id), data=data)
     assert response.status_code == 400
 
     family_member = Person.query.filter_by(name=person.name).first()
     assert family_member is None
 
 
-def test_add_person_to_household_wrong_marital_status(client, household, person):
-    db.session.add(household)
-    db.session.commit()
-
+def test_add_person_to_household_wrong_marital_status(client, household_saved, person):
     data = person.to_json()
     data['MaritalStatus'] = 'Its complicated'
 
-    response = client.post(url_for('households.add_person_to_household', household_id=household.id), data=data)
+    response = client.post(url_for('households.add_person_to_household', household_id=household_saved.id), data=data)
     assert response.status_code == 400
 
     family_member = Person.query.filter_by(name=person.name).first()
     assert family_member is None
 
 
-def test_add_person_to_household_wrong_occupation_type(client, household, person):
-    db.session.add(household)
-    db.session.commit()
-
+def test_add_person_to_household_wrong_occupation_type(client, household_saved, person):
     data = person.to_json()
     data['OccupationType'] = 'Black Market Activity'
 
-    response = client.post(url_for('households.add_person_to_household', household_id=household.id), data=data)
+    response = client.post(url_for('households.add_person_to_household', household_id=household_saved.id), data=data)
     assert response.status_code == 400
 
     family_member = Person.query.filter_by(name=person.name).first()
     assert family_member is None
 
 
-def test_add_person_to_household_wrong_future_dated_date_of_birth(client, household, person):
-    db.session.add(household)
-    db.session.commit()
-
+def test_add_person_to_household_wrong_future_dated_date_of_birth(client, household_saved, person):
     data = person.to_json()
     tomorrow = (datetime.today() + timedelta(days=1)).date()
     data['DOB'] = tomorrow
 
-    response = client.post(url_for('households.add_person_to_household', household_id=household.id), data=data)
+    response = client.post(url_for('households.add_person_to_household', household_id=household_saved.id), data=data)
     assert response.status_code == 400
 
     family_member = Person.query.filter_by(name=person.name).first()
