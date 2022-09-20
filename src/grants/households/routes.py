@@ -33,8 +33,13 @@ def add_person_to_household(household_id):
                         annual_income=annual_income, date_of_birth=date_of_birth, household_id=household_id)
     except AssertionError as e:
         return str(e), 400
+
     db.session.add(person)
     db.session.commit()
+    if spouse_id:
+        spouse = Person.query.get(spouse_id)
+        spouse.spouse_id = person.id
+        db.session.commit()
     return {}
 
 

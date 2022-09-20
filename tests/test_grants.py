@@ -4,6 +4,7 @@ from grants.models import Household, Person
 from datetime import datetime, timedelta
 from flask import url_for
 import json
+from helpers.utils import PersonBuilder
 
 
 # Tests For API 1
@@ -134,3 +135,33 @@ def test_list_all_households_success_multiple_households(client, family1, family
     database_households_json = [household.to_json() for household in Household.query.all()]
 
     assert received_households_json == database_households_json
+
+# Other Tests
+
+
+# Tests for spouse-to-spouse relationship
+def test_spouse_to_spouse_in_PersonBuilder(client, empty_household_saved):
+    alice = PersonBuilder(empty_household_saved).name('Alice').gender_female().married().adult().employed().create_and_write()
+    bob = PersonBuilder(empty_household_saved).name('Bob').gender_male().married(spouse=alice).adult().employed().create_and_write()
+
+    alice = Person.query.filter_by(name='Alice').first()
+
+    assert alice.spouse_id == bob.id
+    assert bob.spouse_id == alice.id
+
+
+def test_spouse_to_spouse_in_add_person_to_household_endpoint(client, empty_household_saved):
+    alice = PersonBuilder(empty_household_saved).name('Alice').gender_female().married().adult().employed().create()
+    response = client.post(url_for('households.add_person_to_household', household_id=empty_household_saved.id), data=alice.to_json())
+    assert response.status_code == 200
+
+    saved_alice = Person.query.filter_by(name='Alice').first()
+
+    bob = PersonBuilder(empty_household_saved).name('Bob').gender_male().married(spouse=saved_alice).adult().employed().create()
+    response = client.post(url_for('households.add_person_to_household', household_id=empty_household_saved.id), data=bob.to_json())
+    assert response.status_code == 200
+
+    saved_bob = Person.query.filter_by(name='Bob').first()
+
+    assert saved_alice.spouse_id == saved_bob.id
+    assert saved_bob.spouse_id == saved_alice.id

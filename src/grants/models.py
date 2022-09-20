@@ -36,7 +36,7 @@ class Person(db.Model):
     # Due to limitations of current API (create person one at a time), if we strictly check that the spouse is an already existing person,
     # we will not be able to add any persons with spouses at all.
     # e.g. Alice married to Bob. We cannot add Alice in since Bob is not an existing person. We cannot add Bob since Alice is not an existing person
-    spouse_id = db.Column(db.Integer)
+    spouse_id = db.Column(db.Integer, db.ForeignKey('person.id'))
 
     occupation_type = db.Column(db.String, nullable=False)
     annual_income = db.Column(db.Float, nullable=False)
@@ -54,6 +54,14 @@ class Person(db.Model):
     def validate_marital_status(self, _, marital_status):
         assert marital_status in Person.valid_marital_statuses()
         return marital_status
+
+    @validates('spouse_id')
+    def validate_spouse_id(self, _, spouse_id):
+        if spouse_id is None:
+            return
+        spouse = Person.query.get(spouse_id)
+        assert spouse is not None
+        return spouse_id
 
     @validates('occupation_type')
     def validate_occupation_type(self, _, occupation_type):
