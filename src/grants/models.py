@@ -37,6 +37,11 @@ class Person(db.Model):
         assert gender in {'M', 'F'}
         return gender
 
+    @validates('marital_status')
+    def validate_marital_status(self, _, marital_status):
+        assert marital_status in {'Single', 'Married', 'Divorced'}
+        return marital_status
+
     def to_json(self):
         return {
             'Name': self.name,
