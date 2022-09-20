@@ -29,5 +29,5 @@ class Person(db.Model):
     annual_income = db.Column(db.Float, nullable=False)
     date_of_birth = db.Column(db.Date, nullable=False)
 
-    household_id = db.Column(db.Integer, db.ForeignKey('household.id'))
+    household_id = db.Column(db.Integer, db.ForeignKey('household.id'), nullable=False)
     household = db.relationship('Household', back_populates='family_members')
