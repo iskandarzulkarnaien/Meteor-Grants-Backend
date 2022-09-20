@@ -34,6 +34,7 @@ def person():
     return person
 
 
+# Tests For API 1
 @pytest.mark.parametrize('housing_type', Household.valid_housing_types())
 def test_create_household_success(client, housing_type):
     data = {
@@ -57,6 +58,7 @@ def test_create_household_wrong_housing_type(client):
     assert household is None
 
 
+# Tests for API 2
 def test_add_person_to_household_success(client, household, person):
     db.session.add(household)
     db.session.commit()
@@ -74,6 +76,16 @@ def test_add_person_to_household_success(client, household, person):
     db.session.refresh(household)
     household_family_member = household.family_members[0]
     assert family_member is household_family_member
+
+
+def test_add_person_to_household_wrong_household_does_not_exist(client, household, person):
+    data = person.to_json()
+
+    response = client.post(f'/household/{household.id}/family/new', data=data)
+    assert response.status_code == 404
+
+    family_member = Person.query.filter_by(name=person.name).first()
+    assert family_member is None
 
 
 def test_add_person_to_household_wrong_gender(client, household, person):
@@ -131,3 +143,5 @@ def test_add_person_to_household_wrong_future_dated_date_of_birth(client, househ
 
     family_member = Person.query.filter_by(name=person.name).first()
     assert family_member is None
+
+# Tests for API 3
