@@ -16,6 +16,14 @@ class Household(db.Model):
     @staticmethod
     def valid_housing_types():
         return {'Landed', 'Condominium', 'HDB'}
+    
+    def to_json(self):
+        data = {
+            'ID': self.id,
+            'Housing Type': self.housing_type,
+            'Family Members': [family_member.to_json() for family_member in self.family_members]
+        }
+        return data
 
 
 class Person(db.Model):
