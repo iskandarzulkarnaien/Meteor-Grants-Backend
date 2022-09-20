@@ -4,7 +4,7 @@ from grants.models import Household, Person
 from datetime import datetime, timedelta
 from flask import url_for
 import json
-from helpers.utils import PersonBuilder
+from helpers.utils import PersonBuilder, HouseholdBuilder
 
 
 @pytest.fixture
@@ -21,7 +21,7 @@ def client():
 
 @pytest.fixture
 def household():
-    household = Household(housing_type='Landed')
+    household = HouseholdBuilder().create()
     return household
 
 
@@ -40,6 +40,7 @@ def test_create_household_success(client, housing_type):
     response = client.post(url_for('households.create_household'), data=data)
     assert response.status_code == 200  # OK
 
+    # TODO: Get total number of households and + 1 instead of putting literal 1.
     household = Household.query.get(1)
     assert household.housing_type == housing_type
 

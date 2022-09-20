@@ -1,5 +1,5 @@
 from grants import db
-from grants.models import Person
+from grants.models import Person, Household
 from faker import Faker
 from random import shuffle
 
@@ -89,6 +89,41 @@ class PersonBuilder():
         db.session.commit()
 
         return person
+
+
+class HouseholdBuilder():
+    def __init__(self):
+        self.household = Household()
+
+    # Household Type related
+    def landed(self):
+        pass
+
+    def condo(self):
+        pass
+
+    def hdb(self):
+        pass
+
+    def add_person(self, person):
+        pass
+
+    def create(self):
+        if not self.household.housing_type:
+            self.household.housing_type = Utils.get_random(Household.valid_housing_types())
+        return self.household
+
+    def create_and_write(self):
+        household = self.create()
+
+        db.session.add(household)
+        db.session.commit()
+
+        for family_member in household.family_members:
+            db.session.add(family_member)
+        db.session.commit()
+
+        return household
 
 
 class Utils():
