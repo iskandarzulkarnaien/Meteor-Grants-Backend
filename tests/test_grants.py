@@ -116,7 +116,7 @@ def test_list_all_households_success_no_households(client):
     assert received_households_json == database_households_json
 
 
-def test_list_all_households_success_one_household(client, person_saved):
+def test_list_all_households_success_one_household(client, family1):
     response = client.get(url_for('households.all_households'))
     assert response.status_code == 200
 
