@@ -37,3 +37,8 @@ def add_person_to_household(household_id):
     db.session.add(person)
     db.session.commit()
     return {}
+
+
+@households.route('/household/all')
+def all_households():
+    return [household.to_json() for household in Household.query.all()]
