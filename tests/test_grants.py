@@ -34,7 +34,7 @@ def person():
     return person
 
 
-@pytest.mark.parametrize('housing_type', ['Landed', 'Condominium', 'HDB'])
+@pytest.mark.parametrize('housing_type', Household.valid_housing_types())
 def test_create_household_success(client, housing_type):
     data = {
         'Housing Type': housing_type
