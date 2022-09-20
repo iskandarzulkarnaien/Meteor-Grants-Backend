@@ -10,8 +10,12 @@ class Household(db.Model):
 
     @validates('housing_type')
     def validate_housing_type(self, _, housing_type):
-        assert housing_type in {'Landed', 'Condominium', 'HDB'}
+        assert housing_type in Household.valid_housing_types()
         return housing_type
+
+    @staticmethod
+    def valid_housing_types():
+        return {'Landed', 'Condominium', 'HDB'}
 
 
 class Person(db.Model):
