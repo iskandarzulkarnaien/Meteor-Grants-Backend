@@ -88,12 +88,27 @@ def test_add_person_to_household_wrong_gender(client, household, person):
     family_member = Person.query.filter_by(name=person.name).first()
     assert family_member is None
 
+
 def test_add_person_to_household_wrong_marital_status(client, household, person):
     db.session.add(household)
     db.session.commit()
 
     data = person.to_json()
     data['MaritalStatus'] = 'Its complicated'
+
+    response = client.post(f'/household/{household.id}/family/new', data=data)
+    assert response.status_code == 400
+
+    family_member = Person.query.filter_by(name=person.name).first()
+    assert family_member is None
+
+
+def test_add_person_to_household_wrong_occupation_type(client, household, person):
+    db.session.add(household)
+    db.session.commit()
+
+    data = person.to_json()
+    data['OccupationType'] = 'Black Market Activity'
 
     response = client.post(f'/household/{household.id}/family/new', data=data)
     assert response.status_code == 400

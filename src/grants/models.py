@@ -42,6 +42,11 @@ class Person(db.Model):
         assert marital_status in {'Single', 'Married', 'Divorced'}
         return marital_status
 
+    @validates('occupation_type')
+    def validate_occupation_type(self, _, occupation_type):
+        assert occupation_type in {'Unemployed', 'Student', 'Employed'}
+        return occupation_type
+
     def to_json(self):
         return {
             'Name': self.name,
