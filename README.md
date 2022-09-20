@@ -3,6 +3,10 @@ This document outlines the requirements of the API as understood by myself and l
 
 ## Definitions
 
+<!-- TODO: Ensure these categories do not overlap e.g. Baby cannot also be Student -->
+- Baby: Person of age < 8 months
+- Student: Person of occupation_type == student
+- Teenager: Person of age > 10 years and < 16 years
 - Child: Person of age < 18 years
 - Adult: Person of age >= 18 years and <= 55 years
 - Elder: Person of age > 55 years
@@ -28,6 +32,7 @@ This document outlines the requirements of the API as understood by myself and l
         [Assumption: Marital Statuses conform to the following standard: https://www.singstat.gov.sg/-/media/files/standards_and_classifications/scms.ashx]
         Integer: 'Spouse'
         [Assumption: Primary key of 'Persons' table]
+        [Assumption: Spouse value is not cleared on Widowed, Separated or Divorced unless the individual remarries]
         String: 'OccupationType' => {'Unemployed', 'Student', 'Employed'}
         Integer: 'AnnualIncome'
         Date: 'DOB'
@@ -89,6 +94,7 @@ This document outlines the requirements of the API as understood by myself and l
 1. Student Encouragement Bonus
     Criteria:
     - At least one student with age < 16 years old
+    - Households income of less than $200,000
     Qualifying:
     - All students < 16 years old
     [Assumption: The qualifying member must also be a student (not stated in assignment docs)]
