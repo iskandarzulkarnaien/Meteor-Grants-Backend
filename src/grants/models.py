@@ -39,17 +39,17 @@ class Person(db.Model):
 
     @validates('gender')
     def validate_gender(self, _, gender):
-        assert gender in {'M', 'F'}
+        assert gender in Person.valid_genders()
         return gender
 
     @validates('marital_status')
     def validate_marital_status(self, _, marital_status):
-        assert marital_status in {'Single', 'Married', 'Divorced'}
+        assert marital_status in Person.valid_marital_statuses()
         return marital_status
 
     @validates('occupation_type')
     def validate_occupation_type(self, _, occupation_type):
-        assert occupation_type in {'Unemployed', 'Student', 'Employed'}
+        assert occupation_type in Person.valid_occupation_types()
         return occupation_type
 
     @validates('date_of_birth')
@@ -61,6 +61,18 @@ class Person(db.Model):
 
         assert date_of_birth_converted <= datetime.today()
         return date_of_birth
+
+    @staticmethod
+    def valid_genders():
+        return {'M', 'F'}
+
+    @staticmethod
+    def valid_marital_statuses():
+        return {'Single', 'Married', 'Divorced'}
+
+    @staticmethod
+    def valid_occupation_types():
+        return {'Unemployed', 'Student', 'Employed'}
 
     def to_json(self):
         return {
