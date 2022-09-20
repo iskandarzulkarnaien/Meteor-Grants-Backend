@@ -1,6 +1,7 @@
 from grants import create_app, db
 import pytest
 from grants.models import Household, Person
+from datetime import datetime, timedelta
 
 
 @pytest.fixture
@@ -28,7 +29,7 @@ def person():
         spouse_id=None,
         occupation_type='Employed',
         annual_income='12000',
-        date_of_birth='08-12-1997'
+        date_of_birth='1997-08-12'
     )
     return person
 
@@ -109,6 +110,21 @@ def test_add_person_to_household_wrong_occupation_type(client, household, person
 
     data = person.to_json()
     data['OccupationType'] = 'Black Market Activity'
+
+    response = client.post(f'/household/{household.id}/family/new', data=data)
+    assert response.status_code == 400
+
+    family_member = Person.query.filter_by(name=person.name).first()
+    assert family_member is None
+
+
+def test_add_person_to_household_wrong_future_dated_date_of_birth(client, household, person):
+    db.session.add(household)
+    db.session.commit()
+
+    data = person.to_json()
+    tomorrow = (datetime.today() + timedelta(days=1)).date()
+    data['DOB'] = tomorrow
 
     response = client.post(f'/household/{household.id}/family/new', data=data)
     assert response.status_code == 400
