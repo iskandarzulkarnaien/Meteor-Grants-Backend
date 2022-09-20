@@ -4,6 +4,7 @@ from grants.models import Household, Person
 from datetime import datetime, timedelta
 from flask import url_for
 import json
+from helpers.utils import PersonBuilder
 
 
 @pytest.fixture
@@ -25,16 +26,8 @@ def household():
 
 
 @pytest.fixture
-def person():
-    person = Person(
-        name='Jonathan Yao',
-        gender='M',
-        marital_status='Single',
-        spouse_id=None,
-        occupation_type='Employed',
-        annual_income='12000',
-        date_of_birth=datetime.strptime('1997-08-12', '%Y-%m-%d').date()
-    )
+def person(household):
+    person = PersonBuilder(household).create()
     return person
 
 
@@ -149,6 +142,7 @@ def test_add_person_to_household_wrong_future_dated_date_of_birth(client, househ
     family_member = Person.query.filter_by(name=person.name).first()
     assert family_member is None
 
+
 # Tests for API 3
 def test_list_all_households_success_no_households(client):
     response = client.get(url_for('households.all_households'))
@@ -157,7 +151,7 @@ def test_list_all_households_success_no_households(client):
     # Check the data to see if it tallies with data retrieved from database
     received_households_json = json.loads(response.get_data())
     database_households_json = [household.to_json() for household in Household.query.all()]
-    
+
     assert received_households_json == database_households_json
 
 
@@ -174,6 +168,6 @@ def test_list_all_households_success_one_household(client, household, person):
 
     received_households_json = json.loads(response.get_data())
     database_households_json = [household.to_json() for household in Household.query.all()]
-    
+
     assert received_households_json == database_households_json
 

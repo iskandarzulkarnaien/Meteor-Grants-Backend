@@ -1,7 +1,6 @@
 from flask import Blueprint, request
 from grants.models import Household, Person
 from grants import db
-from datetime import datetime
 
 households = Blueprint('households', __name__)
 
