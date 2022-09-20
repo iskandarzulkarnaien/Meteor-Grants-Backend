@@ -17,12 +17,14 @@ class Household(db.Model):
     def valid_housing_types():
         return {'Landed', 'Condominium', 'HDB'}
 
-    def to_json(self):
+    def to_json(self, excludes=[]):
         data = {
             'ID': self.id,
             'Housing Type': self.housing_type,
             'Family Members': [family_member.to_json() for family_member in self.family_members]
         }
+        for item in excludes:
+            data.pop(item)
         return data
 
 
@@ -90,8 +92,8 @@ class Person(db.Model):
     def valid_occupation_types():
         return {'Unemployed', 'Student', 'Employed'}
 
-    def to_json(self):
-        return {
+    def to_json(self, excludes=[]):
+        data = {
             'ID': self.id,
             'Name': self.name,
             'Gender': self.gender,
@@ -101,3 +103,6 @@ class Person(db.Model):
             'AnnualIncome': self.annual_income,
             'DOB': datetime.strftime(self.date_of_birth, '%Y-%m-%d'),
         }
+        for item in excludes:
+            data.pop(item)
+        return data

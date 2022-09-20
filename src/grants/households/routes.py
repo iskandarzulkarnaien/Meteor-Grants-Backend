@@ -45,4 +45,4 @@ def add_person_to_household(household_id):
 
 @households.route('/household/all')
 def all_households():
-    return [household.to_json() for household in Household.query.all()]
+    return [household.to_json(excludes=['ID']) for household in Household.query.all()]
