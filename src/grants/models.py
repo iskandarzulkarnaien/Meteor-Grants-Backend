@@ -1,5 +1,6 @@
 from grants import db
 from sqlalchemy.orm import validates
+from datetime import datetime
 
 
 class Household(db.Model):
@@ -46,6 +47,16 @@ class Person(db.Model):
     def validate_occupation_type(self, _, occupation_type):
         assert occupation_type in {'Unemployed', 'Student', 'Employed'}
         return occupation_type
+
+    @validates('date_of_birth')
+    def validate_date_of_birth(self, _, date_of_birth):
+        if isinstance(date_of_birth, str):
+            date_of_birth_converted = datetime.strptime(date_of_birth, '%Y-%m-%d')
+        else:
+            date_of_birth_converted = date_of_birth
+
+        assert date_of_birth_converted <= datetime.today()
+        return date_of_birth
 
     def to_json(self):
         return {
