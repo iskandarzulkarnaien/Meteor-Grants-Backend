@@ -55,7 +55,9 @@ class PersonBuilder():
 
     # Occupation Type Related
     def unemployed(self):
-        pass
+        self.person.occupation_type = 'Unemployed'
+        self.person.annual_income = 0
+        return self
 
     def student(self):
         self.person.occupation_type = 'Student'
@@ -85,8 +87,12 @@ class PersonBuilder():
         self.person.date_of_birth = Utils.get_date_of_birth_from_age(age)
         return self
 
-    def elder(self):
-        pass
+    def elder(self, age=None):
+        if not age:
+            age = randint(56, 99)
+
+        self.person.date_of_birth = Utils.get_date_of_birth_from_age(age)
+        return self
 
     # TODO: Throw exception on failure to provide certain fields.
     def create(self):
