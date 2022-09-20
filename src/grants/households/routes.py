@@ -27,9 +27,7 @@ def add_person_to_household(household_id):
     spouse_id = request.form.get('Spouse')
     occupation_type = request.form.get('OccupationType')
     annual_income = request.form.get('AnnualIncome')
-
-    date_of_birth_str = request.form.get('DOB')
-    date_of_birth = datetime.strptime(date_of_birth_str, '%Y-%m-%d')
+    date_of_birth = request.form.get('DOB')
 
     try:
         person = Person(name=name, gender=gender, marital_status=marital_status, spouse_id=spouse_id, occupation_type=occupation_type,

@@ -55,12 +55,12 @@ class Person(db.Model):
     @validates('date_of_birth')
     def validate_date_of_birth(self, _, date_of_birth):
         if isinstance(date_of_birth, str):
-            date_of_birth_converted = datetime.strptime(date_of_birth, '%Y-%m-%d')
+            date_of_birth_converted = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
         else:
             date_of_birth_converted = date_of_birth
 
-        assert date_of_birth_converted <= datetime.today()
-        return date_of_birth
+        assert date_of_birth_converted <= datetime.today().date()
+        return date_of_birth_converted
 
     @staticmethod
     def valid_genders():
