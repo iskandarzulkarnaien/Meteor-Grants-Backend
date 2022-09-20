@@ -3,6 +3,7 @@ import pytest
 from grants.models import Household, Person
 from datetime import datetime, timedelta
 from flask import url_for
+import json
 
 
 @pytest.fixture
@@ -149,3 +150,30 @@ def test_add_person_to_household_wrong_future_dated_date_of_birth(client, househ
     assert family_member is None
 
 # Tests for API 3
+def test_list_all_households_success_no_households(client):
+    response = client.get(url_for('households.all_households'))
+    assert response.status_code == 200
+
+    # Check the data to see if it tallies with data retrieved from database
+    received_households_json = json.loads(response.get_data())
+    database_households_json = [household.to_json() for household in Household.query.all()]
+    
+    assert received_households_json == database_households_json
+
+
+def test_list_all_households_success_one_household(client, household, person):
+    db.session.add(household)
+    db.session.commit()
+
+    person.household_id = household.id
+    db.session.add(person)
+    db.session.commit()
+
+    response = client.get(url_for('households.all_households'))
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+    database_households_json = [household.to_json() for household in Household.query.all()]
+    
+    assert received_households_json == database_households_json
+
