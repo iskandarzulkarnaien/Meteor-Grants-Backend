@@ -43,15 +43,45 @@ def person_saved(empty_household_saved):
 
 # TODO: Find better names for the below fixtures
 @pytest.fixture
-def family1(empty_household_saved):
+def family1():
     # 2x Adults (married)
     # 2x Teenager Student
     # - Total Annual Income: $60,000
-    household = empty_household_saved
+    household = HouseholdBuilder().create_and_write()
 
     # Note: Intentionally suppress unused variable warning as these variable assignments make the code more readable
     husband = PersonBuilder(household).gender_male().married().employed(30000).adult().create_and_write()   # noqa: F841
     wife = PersonBuilder(household).gender_female().married().employed(30000).adult().create_and_write()    # noqa: F841
-    student1 = PersonBuilder(household).student().teenager().create_and_write()                             # noqa: F841
-    student2 = PersonBuilder(household).student().teenager().create_and_write()                             # noqa: F841
+    teen_student1 = PersonBuilder(household).student().teenager().create_and_write()                        # noqa: F841
+    teen_student2 = PersonBuilder(household).student().teenager().create_and_write()                        # noqa: F841
+    return household
+
+
+@pytest.fixture
+def family2():
+    # 2x Adults (married)
+    # 1x Teenager Student
+    # 1x Adult Student
+    # - Total Annual Income: $180,000
+    household = HouseholdBuilder().create_and_write()
+
+    husband = PersonBuilder(household).gender_male().married().employed(80000).adult().create_and_write()   # noqa: F841
+    wife = PersonBuilder(household).gender_female().married().employed(100000).adult().create_and_write()   # noqa: F841
+    teen_student1 = PersonBuilder(household).student().teenager().create_and_write()                        # noqa: F841
+    adult_student = PersonBuilder(household).student().adult().create_and_write()                           # noqa: F841
+    return household
+
+
+@pytest.fixture
+def family3():
+    # 1x Employed Elder
+    # 2x Adults (married)
+    # 1x Unemployed Teenager
+    # - Total Annual Income: $90,000
+    household = HouseholdBuilder().create_and_write()
+
+    elder_employed = PersonBuilder(household).gender_male().employed(20000).elder().create_and_write()      # noqa: F841
+    husband = PersonBuilder(household).gender_male().married().employed(40000).adult().create_and_write()   # noqa: F841
+    wife = PersonBuilder(household).gender_female().married().employed(30000).adult().create_and_write()    # noqa: F841
+    teen_unemployed = PersonBuilder(household).unemployed().teenager().create_and_write()                   # noqa: F841
     return household
