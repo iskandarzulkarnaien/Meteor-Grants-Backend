@@ -76,11 +76,12 @@ class Person(db.Model):
 
     def to_json(self):
         return {
+            'ID': self.id,
             'Name': self.name,
             'Gender': self.gender,
             'MaritalStatus': self.marital_status,
             'Spouse': self.spouse_id,
             'OccupationType': self.occupation_type,
             'AnnualIncome': self.annual_income,
-            'DOB': self.date_of_birth,
+            'DOB': datetime.strftime(self.date_of_birth, '%Y-%m-%d'),
         }
