@@ -32,7 +32,7 @@ def person():
         spouse_id=None,
         occupation_type='Employed',
         annual_income='12000',
-        date_of_birth='1997-08-12'
+        date_of_birth=datetime.strptime('1997-08-12', '%Y-%m-%d').date()
     )
     return person
 
