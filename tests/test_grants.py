@@ -112,7 +112,7 @@ def test_list_all_households_success_no_households(client):
 
     # Check the data to see if it tallies with data retrieved from database
     received_households_json = json.loads(response.get_data())
-    database_households_json = [household.to_json() for household in Household.query.all()]
+    database_households_json = [household.to_json(excludes=['ID']) for household in Household.query.all()]
 
     assert received_households_json == database_households_json
 
@@ -122,7 +122,7 @@ def test_list_all_households_success_one_household(client, family1):
     assert response.status_code == 200
 
     received_households_json = json.loads(response.get_data())
-    database_households_json = [household.to_json() for household in Household.query.all()]
+    database_households_json = [household.to_json(excludes=['ID']) for household in Household.query.all()]
 
     assert received_households_json == database_households_json
 
@@ -132,7 +132,7 @@ def test_list_all_households_success_multiple_households(client, family1, family
     assert response.status_code == 200
 
     received_households_json = json.loads(response.get_data())
-    database_households_json = [household.to_json() for household in Household.query.all()]
+    database_households_json = [household.to_json(excludes=['ID']) for household in Household.query.all()]
 
     assert received_households_json == database_households_json
 
