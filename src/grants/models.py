@@ -31,3 +31,14 @@ class Person(db.Model):
 
     household_id = db.Column(db.Integer, db.ForeignKey('household.id'), nullable=False)
     household = db.relationship('Household', back_populates='family_members')
+
+    def to_json(self):
+        return {
+            'Name': self.name,
+            'Gender': self.gender,
+            'MaritalStatus': self.marital_status,
+            'Spouse': self.spouse_id,
+            'OccupationType': self.occupation_type,
+            'AnnualIncome': self.annual_income,
+            'DOB': self.date_of_birth,
+        }
