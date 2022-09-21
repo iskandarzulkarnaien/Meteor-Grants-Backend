@@ -80,9 +80,13 @@ def search_households():
     total_annual_income_limits = request.form.getlist('TotalAnnualIncomeLimits')
     if total_annual_income_limits:
         query.set_total_annual_income_limits(total_annual_income_limits)
-    
+
     num_children = request.form.getlist('NumChildren')
     if num_children:
         query.set_num_children(num_children)
+
+    num_babies = request.form.getlist('NumBabies')
+    if num_babies:
+        query.set_num_babies(num_babies)
 
     return query.run()
