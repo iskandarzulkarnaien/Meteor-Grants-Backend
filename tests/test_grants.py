@@ -147,7 +147,7 @@ def test_search_for_household_by_no_params_return_all_success(client, all_famili
     assert response.status_code == 200
 
     received_households_json = json.loads(response.get_data())
-    expected_households_json = [household.to_json(excludes=['ID']) for household in Household.query.all()]
+    expected_households_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in Household.query.all()]
 
     assert received_households_json == expected_households_json
 
@@ -161,7 +161,8 @@ def test_search_for_household_by_household_type_success(client, all_families, ho
     assert response.status_code == 200
 
     received_households_json = json.loads(response.get_data())
-    expected_households_json = [household.to_json(excludes=['ID']) for household in Household.query.filter_by(housing_type=housing_type)]
+    expected_households_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse'])
+                                for household in Household.query.filter_by(housing_type=housing_type)]
 
     assert received_households_json == expected_households_json
 
@@ -174,7 +175,8 @@ def test_search_for_household_by_household_type_multiple_types_success(client, a
     assert response.status_code == 200
 
     received_households_json = json.loads(response.get_data())
-    expected_households_json = [household.to_json(excludes=['ID']) for household in Household.query.filter(Household.housing_type.in_(['HDB', 'Landed']))]
+    expected_households_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse'])
+                                for household in Household.query.filter(Household.housing_type.in_(['HDB', 'Landed']))]
 
     assert received_households_json == expected_households_json
 

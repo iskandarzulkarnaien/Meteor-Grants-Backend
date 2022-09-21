@@ -28,5 +28,5 @@ class QueryBuilder():
             valid_household_types = self.params['HouseholdTypes']
             self.query = self.query.filter(Household.housing_type.in_(valid_household_types))
 
-        query_results_json = [household.to_json(excludes=['ID']) for household in self.query]
+        query_results_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in self.query]
         return query_results_json
