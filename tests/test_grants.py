@@ -137,7 +137,11 @@ def test_list_all_households_success_multiple_households(client, family1, family
     assert received_households_json == database_households_json
 
 
-# TODO: Rename all tests to follow convention 'test_<endpoint name>_<test scenario>_<success or fail>
+'''
+TODO: Rename all tests to follow convention 'test_<endpoint name>_<test scenario>_<success or fail>
+TODO: Mock the expected results where possible instead of using the same code used by the endpoint being tested to pull data,
+      since both will return the same results but both results will be wrong.
+'''
 
 
 # Tests for API 4
@@ -177,6 +181,36 @@ def test_search_for_household_by_household_type_multiple_types_success(client, a
     received_households_json = json.loads(response.get_data())
     expected_households_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse'])
                                 for household in Household.query.filter(Household.housing_type.in_(['HDB', 'Landed']))]
+
+    assert received_households_json == expected_households_json
+
+
+def test_search_for_household_by_family_member_name_success(client, all_families, family1):
+    data = {
+        'FamilyMemberNames': ['Alice']
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family1]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    assert received_households_json == expected_households_json
+
+
+def test_search_for_household_by_family_member_name_multiple_names_success(client, all_families, family1, family2):
+    data = {
+        'FamilyMemberNames': ['Alice', 'Cody']
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family1, family2]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
 
