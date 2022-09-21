@@ -20,7 +20,7 @@ class Household(db.Model):
     def to_json(self, excludes=[]):
         data = {
             'ID': self.id,
-            'Housing Type': self.housing_type,
+            'HouseholdType': self.housing_type,
             'Family Members': [family_member.to_json() for family_member in self.family_members]
         }
         for item in excludes:
