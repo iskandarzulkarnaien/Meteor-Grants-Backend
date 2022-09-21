@@ -77,4 +77,8 @@ def search_households():
     if num_teenage_students:
         query.set_num_teenage_students(num_teenage_students)
 
+    total_annual_income_limits = request.form.getlist('TotalAnnualIncomeLimits')
+    if total_annual_income_limits:
+        query.set_total_annual_income_limits(total_annual_income_limits)
+
     return query.run()

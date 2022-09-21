@@ -11,14 +11,13 @@ class QueryBuilder():
 
         self.household_types = []
         self.family_member_names = []
-        self.num_family_members = None
-        self.num_babies = None
-        self.num_children = None
-        self.num_adults = None
-        self.num_elders = None
-        self.num_teenage_students = None
-        self.min_family_annual_income = None
-        self.max_family_annual_income = None
+        self.num_family_members = []
+        self.num_babies = []
+        self.num_children = []
+        self.num_adults = []
+        self.num_elders = []
+        self.num_teenage_students = []
+        self.total_annual_income_limits = []
 
     def set_household_types(self, housing_types):
         self.household_types = housing_types
@@ -52,11 +51,8 @@ class QueryBuilder():
         self.num_teenage_students = num
         return self
 
-    def set_total_annual_income(self, min_income=None, max_income=None):
-        if min_income is not None:
-            self.min_family_annual_income = min_income
-        if max_income is not None:
-            self.max_family_annual_income = max_income
+    def set_total_annual_income_limits(self, total_annual_income_limits):
+        self.total_annual_income_limits = total_annual_income_limits
         return self
 
     def run(self, include_invalid_members=True):
@@ -104,6 +100,13 @@ class QueryBuilder():
             self.query = self.query.join(Household.family_members) \
                 .filter((Person.date_of_birth >= DateHelper.date_years_ago(16)) & (Person.occupation_type == 'Student')) \
                 .group_by(Household).having(num_teenage_students_queries)
+
+        if self.total_annual_income_limits:
+            total_income_queries = QueryBuilder.generate_or_query(
+                lambda limits: ((Household.total_annual_income >= int(limits[0])) & (Household.total_annual_income <= int(limits[1]))),
+                [limits.split() for limits in self.total_annual_income_limits]
+            )
+            self.query = self.query.filter(total_income_queries)
 
         query_results_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in self.query]
         return query_results_json

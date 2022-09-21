@@ -1,6 +1,8 @@
 from grants import db
 from sqlalchemy.orm import validates
 from datetime import datetime
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.sql import func, select
 
 
 class Household(db.Model):
@@ -20,6 +22,21 @@ class Household(db.Model):
     @staticmethod
     def valid_housing_types():
         return {'Landed', 'Condominium', 'HDB'}
+
+    # Hybrid Properties
+
+    @hybrid_property
+    def total_annual_income(self):
+        total_annual_income = sum([person.annual_income for person in self.family_members])
+        return total_annual_income
+
+    @total_annual_income.expression
+    def total_annual_income(cls):
+        return (
+            select([func.sum(Person.annual_income)])
+            .where(Person.household_id == cls.id)
+            .label('total_annual_income')
+        )
 
     # Other Methods
 
