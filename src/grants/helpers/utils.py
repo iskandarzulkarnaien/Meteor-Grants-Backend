@@ -87,6 +87,15 @@ class QueryBuilder():
                 .filter((Person.date_of_birth <= DateHelper.date_years_ago(18)) & (Person.date_of_birth >= DateHelper.date_years_ago(55))) \
                 .group_by(Household).having(num_adults_queries)
 
+        if self.num_elders:
+            num_elders_queries = QueryBuilder.generate_or_query(
+                lambda num: func.count(Person.id) == int(num),
+                self.num_elders
+            )
+            self.query = self.query.join(Household.family_members) \
+                .filter(Person.date_of_birth < DateHelper.date_years_ago(55)) \
+                .group_by(Household).having(num_elders_queries)
+
         query_results_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in self.query]
         return query_results_json
 
