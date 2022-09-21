@@ -71,12 +71,21 @@ class QueryBuilder():
             )
             self.query = self.query.join(Household.family_members).filter(names_queries)
 
-        if self.num_family_members is not None:
+        if self.num_family_members:
             num_family_members_queries = QueryBuilder.generate_or_query(
                 lambda num: func.count(Person.id) == int(num),
                 self.num_family_members
             )
             self.query = self.query.join(Household.family_members).group_by(Household).having(num_family_members_queries)
+
+        if self.num_adults:
+            num_adults_queries = QueryBuilder.generate_or_query(
+                lambda num: func.count(Person.id) == int(num),
+                self.num_adults
+            )
+            self.query = self.query.join(Household.family_members) \
+                .filter((Person.date_of_birth <= DateHelper.date_years_ago(18)) & (Person.date_of_birth >= DateHelper.date_years_ago(55))) \
+                .group_by(Household).having(num_adults_queries)
 
         query_results_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in self.query]
         return query_results_json
