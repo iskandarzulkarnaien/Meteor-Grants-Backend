@@ -51,10 +51,10 @@ def family1():
     household = HouseholdBuilder().hdb().create_and_write()
 
     # Note: Intentionally suppress unused variable warning as these variable assignments make the code more readable
-    husband = PersonBuilder(household).gender_male().married().employed(30000).adult().create_and_write()   # noqa: F841
-    wife = PersonBuilder(household).gender_female().married().employed(30000).adult().create_and_write()    # noqa: F841
-    teen_student1 = PersonBuilder(household).student().teenager().create_and_write()                        # noqa: F841
-    teen_student2 = PersonBuilder(household).student().teenager().create_and_write()                        # noqa: F841
+    husband = PersonBuilder(household).name('Bob').gender_male().married().employed(30000).adult().create_and_write()   # noqa: F841
+    wife = PersonBuilder(household).name('Alice').gender_female().married().employed(30000).adult().create_and_write()  # noqa: F841
+    teen_student1 = PersonBuilder(household).student().teenager().create_and_write()                                    # noqa: F841
+    teen_student2 = PersonBuilder(household).student().teenager().create_and_write()                                    # noqa: F841
     return household
 
 
@@ -69,7 +69,7 @@ def family2():
 
     husband = PersonBuilder(household).gender_male().married().employed(80000).adult().create_and_write()   # noqa: F841
     wife = PersonBuilder(household).gender_female().married().employed(100000).adult().create_and_write()   # noqa: F841
-    teen_student1 = PersonBuilder(household).student().teenager().create_and_write()                        # noqa: F841
+    teen_student1 = PersonBuilder(household).name('Cody').student().teenager().create_and_write()           # noqa: F841
     adult_student = PersonBuilder(household).student().adult().create_and_write()                           # noqa: F841
     return household
 
