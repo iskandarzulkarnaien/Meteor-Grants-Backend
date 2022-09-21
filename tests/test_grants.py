@@ -304,6 +304,43 @@ def test_search_for_household_by_num_elders_multiple_num_success(client, all_fam
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
+
+
+def test_search_for_household_by_num_teenage_students_success(client, all_families, family2):
+    data = {
+        'NumTeenageStudents': [1]
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family2]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    print(json.dumps(received_households_json, indent=4))
+    print(json.dumps(expected_households_json, indent=4))
+    print(len(received_households_json))
+    print(len(expected_households_json))
+
+    assert received_households_json == expected_households_json
+
+
+def test_search_for_household_by_num_teenage_students_multiple_num_success(client, all_families, family1, family2):
+    data = {
+        'NumTeenageStudents': [1, 2]
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family1, family2]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    assert received_households_json == expected_households_json
+
+
 # Other Tests: Tests for spouse-to-spouse relationship
 def test_spouse_to_spouse_in_PersonBuilder(client, empty_household_saved):
     alice = PersonBuilder(empty_household_saved).name('Alice').gender_female().married().adult().employed().create_and_write()
