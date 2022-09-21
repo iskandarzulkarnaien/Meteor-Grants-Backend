@@ -73,4 +73,8 @@ def search_households():
     if num_elders:
         query.set_num_elders(num_elders)
 
+    num_teenage_students = request.form.getlist('NumTeenageStudents')
+    if num_teenage_students:
+        query.set_num_teenage_students(num_teenage_students)
+
     return query.run()
