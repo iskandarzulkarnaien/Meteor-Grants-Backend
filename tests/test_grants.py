@@ -336,6 +336,36 @@ def test_search_for_household_by_num_teenage_students_multiple_num_success(clien
     assert received_households_json == expected_households_json
 
 
+def test_search_for_household_by_total_annual_income_success(client, all_families, family4, family5):
+    data = {
+        'TotalAnnualIncomeLimits': ['20000 30000']
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family4, family5]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    assert received_households_json == expected_households_json
+
+
+def test_search_for_household_by_total_annual_income_multiple_pairs_success(client, all_families, family2, family3):
+    data = {
+        'TotalAnnualIncomeLimits': ['160000 200000', '80000 100000']
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family2, family3]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    assert received_households_json == expected_households_json
+
+
 # Other Tests: Tests for spouse-to-spouse relationship
 def test_spouse_to_spouse_in_PersonBuilder(client, empty_household_saved):
     alice = PersonBuilder(empty_household_saved).name('Alice').gender_female().married().adult().employed().create_and_write()
