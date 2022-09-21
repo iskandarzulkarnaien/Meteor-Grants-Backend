@@ -216,7 +216,7 @@ def test_search_for_household_by_family_member_name_multiple_names_success(clien
     assert received_households_json == expected_households_json
 
 
-def test_search_for_household_by_num_family_members_success(client, all_families, family3):
+def test_search_for_household_by_num_family_members_success(client, all_families, family3, family7):
     data = {
         'NumFamilyMembers': [6]
     }
@@ -225,13 +225,13 @@ def test_search_for_household_by_num_family_members_success(client, all_families
 
     received_households_json = json.loads(response.get_data())
 
-    expected_households = [family3]
+    expected_households = [family3, family7]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
 
 
-def test_search_for_household_by_num_family_members_multiple_nums_success(client, all_families, family3, family4):
+def test_search_for_household_by_num_family_members_multiple_nums_success(client, all_families, family3, family4, family7):
     data = {
         'NumFamilyMembers': [5, 6]
     }
@@ -240,7 +240,7 @@ def test_search_for_household_by_num_family_members_multiple_nums_success(client
 
     received_households_json = json.loads(response.get_data())
 
-    expected_households = [family3, family4]
+    expected_households = [family3, family4, family7]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
@@ -254,7 +254,7 @@ def test_search_for_household_by_num_family_members_multiple_nums_success(client
 #     pass
 
 
-def test_search_for_household_by_num_child_success(client, all_families, family2):
+def test_search_for_household_by_num_child_success(client, all_families, family2, family6):
     data = {
         'NumChildren': [1]
     }
@@ -263,13 +263,13 @@ def test_search_for_household_by_num_child_success(client, all_families, family2
 
     received_households_json = json.loads(response.get_data())
 
-    expected_households = [family2]
+    expected_households = [family2, family6]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
 
 
-def test_search_for_household_by_num_child_multiple_num_success(client, all_families, family2, family3):
+def test_search_for_household_by_num_child_multiple_num_success(client, all_families, family2, family3, family6):
     data = {
         'NumChildren': [1, 3]
     }
@@ -278,7 +278,7 @@ def test_search_for_household_by_num_child_multiple_num_success(client, all_fami
 
     received_households_json = json.loads(response.get_data())
 
-    expected_households = [family2, family3]
+    expected_households = [family2, family3, family6]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
@@ -389,7 +389,7 @@ def test_search_for_household_by_total_annual_income_success(client, all_familie
     assert received_households_json == expected_households_json
 
 
-def test_search_for_household_by_total_annual_income_multiple_pairs_success(client, all_families, family2, family3):
+def test_search_for_household_by_total_annual_income_multiple_pairs_success(client, all_families, family2, family3, family6):
     data = {
         'TotalAnnualIncomeLimits': ['160000 200000', '80000 100000']
     }
@@ -398,7 +398,7 @@ def test_search_for_household_by_total_annual_income_multiple_pairs_success(clie
 
     received_households_json = json.loads(response.get_data())
 
-    expected_households = [family2, family3]
+    expected_households = [family2, family3, family6]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
