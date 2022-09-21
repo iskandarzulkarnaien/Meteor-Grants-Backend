@@ -258,10 +258,6 @@ def test_search_for_household_by_num_adults_success(client, all_families, family
     expected_households = [family4]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
-    print(json.dumps(received_households_json, indent=4))
-    print(json.dumps(expected_households_json, indent=4))
-    print(len(received_households_json))
-
     assert received_households_json == expected_households_json
 
 
@@ -277,9 +273,6 @@ def test_search_for_household_by_num_adults_multiple_num_success(client, all_fam
     expected_households = [family2, family4, family5]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
-    print(json.dumps(received_households_json, indent=4))
-    print(json.dumps(expected_households_json, indent=4))
-    print(len(received_households_json))
     assert received_households_json == expected_households_json
 
 
