@@ -14,6 +14,8 @@ This document outlines the requirements of the API as understood by myself and l
 ## End-points
 
 ```markdown
+[Assumption: Depending on context, "Fields" may refer to the data items to be received by the endpoint or returned by the endpoint]
+
 1. Create Household
     Route: '/household/new'
     Type: 'POST'
@@ -64,15 +66,31 @@ This document outlines the requirements of the API as understood by myself and l
         ]
 
 **TODO: Add more params that are relevant**
+[Assumption: "Search" for a specific household refers to a literal search, which returns all households which meet the search criteria]
 4. Search for a specific household
     Route: '/household/search'
-    Type: 'GET'
+    Type: 'POST'
     Params:
-        String: 'HouseholdType'
-        Integer: 'Total Family Members'
-        Integer: 'Total Annual Income'
-        Boolean: 'Has Student'
-        Boolean: 'Has Elder'
+        Essential (Mandatory to implement):
+            String: 'HouseholdType'
+            String: 'Family Member Name'
+            Integer: 'Num Family Members'
+            Integer: 'Num Baby'
+            Integer: 'Num Child'
+            Integer: 'Num Adults'
+            Integer: 'Num Elder'
+            Integer: 'Num Teenage Students'
+            Integer: 'Total Annual Income'
+
+        Bonus (Not critical to API):
+            Integer: 'Num Male'
+            Integer: 'Num Female'
+            Integer: 'Num Teenager'
+            Boolean: 'Has {marital_status}'
+            Integer: 'Num Students'
+            Integer: 'Num Unemployed'
+            Integer: 'Num Employed'
+
         [Assumption: Search params are not given in the assignment docs. I have included a list of search params I believe are useful, especially if they are related to the grants]
     Response Format:
         Same as endpoint 3, but only inclusive of the items that match the search params
