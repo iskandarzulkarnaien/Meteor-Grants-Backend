@@ -17,11 +17,11 @@ class Household(db.Model):
     def valid_housing_types():
         return {'Landed', 'Condominium', 'HDB'}
 
-    def to_json(self, excludes=[]):
+    def to_json(self, excludes=[], family_excludes=[]):
         data = {
             'ID': self.id,
             'HouseholdType': self.housing_type,
-            'Family Members': [family_member.to_json() for family_member in self.family_members]
+            'Family Members': [family_member.to_json(excludes=family_excludes) for family_member in self.family_members]
         }
         for item in excludes:
             data.pop(item)
