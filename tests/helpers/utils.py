@@ -47,16 +47,20 @@ class PersonBuilder():
         return self
 
     def widowed(self, spouse=None):
-        pass
+        self.person.marital_status = 'Widowed'
+        return self
 
     def separated(self, spouse=None):
-        pass
+        self.person.marital_status = 'Separated'
+        return self
 
     def divorced(self, spouse=None):
-        pass
+        self.person.marital_status = 'Divorced'
+        return self
 
     def marital_status_not_reported(self):
-        pass
+        self.person.marital_status = 'Not Reported'
+        return self
 
     # Occupation Type Related
     def unemployed(self):
