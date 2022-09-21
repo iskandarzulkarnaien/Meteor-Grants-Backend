@@ -57,4 +57,8 @@ def search_households():
     if household_types:
         query.set_household_types(household_types)
 
+    family_member_names = request.form.getlist('FamilyMemberNames')
+    if family_member_names:
+        query.set_family_member_names(family_member_names)
+
     return query.run()
