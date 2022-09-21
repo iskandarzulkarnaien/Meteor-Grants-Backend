@@ -1,5 +1,7 @@
 from grants.models import Household, Person
 from sqlalchemy import or_, func
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 
 class QueryBuilder():
@@ -83,3 +85,18 @@ class QueryBuilder():
     def generate_or_query(query_function, items):
         queries = [query_function(item) for item in items]
         return or_(*queries)
+
+
+class DateHelper():
+
+    @staticmethod
+    def date_years_ago(years):
+        return date.today() - relativedelta(years=years)
+
+    @staticmethod
+    def age_from_dob(date_of_birth):
+        age = relativedelta(date.today(), date_of_birth)
+        return {
+            'years': age.years,
+            'months': age.months
+        }
