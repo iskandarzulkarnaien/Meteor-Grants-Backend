@@ -69,4 +69,8 @@ def search_households():
     if num_adults:
         query.set_num_adults(num_adults)
 
+    num_elders = request.form.getlist('NumElders')
+    if num_elders:
+        query.set_num_elders(num_elders)
+
     return query.run()
