@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from grants.models import Household, Person
 from grants import db
+from grants.helpers.utils import QueryBuilder
 
 households = Blueprint('households', __name__)
 
@@ -46,3 +47,14 @@ def add_person_to_household(household_id):
 @households.route('/household/all')
 def all_households():
     return [household.to_json(excludes=['ID']) for household in Household.query.all()]
+
+
+@households.route('/household/search', methods=['POST'])
+def search_households():
+    query = QueryBuilder()
+
+    household_types = request.form.getlist('HouseholdTypes')
+    if household_types:
+        query.household_types(household_types)
+
+    return query.run()
