@@ -84,8 +84,16 @@ class PersonBuilder():
     Possible off by 1 error or date comparison issue exists.
     '''
     # Age Related
-    def baby(self):
-        pass
+    def baby(self, age=None):
+        if not age:
+            age = randint(1, 7)
+        
+        self.person.date_of_birth = Utils.get_date_of_birth_from_age(age, years=False)
+
+        self.person.occupation_type = 'Unemployed'
+        self.person.annual_income = 0.0
+
+        return self
 
     def teenager(self, age=None):
         if not age:
@@ -195,6 +203,11 @@ class Utils():
         return values.pop()
 
     def get_date_of_birth_from_age(age, years=True):
+        if not years:
+            random_number_of_months = randint(0, age)
+            date_of_birth = date.today() - relativedelta(months=random_number_of_months)
+            return date_of_birth
+
         # Person could be exactly 1 day from turning age+1 years old
         earliest_birthdate = date.today() - relativedelta(years=age+1) + timedelta(days=1)
 
