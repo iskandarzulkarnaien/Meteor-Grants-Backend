@@ -1,5 +1,5 @@
 from grants.models import Household, Person
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 
 
 class QueryBuilder():
@@ -68,6 +68,13 @@ class QueryBuilder():
                 self.family_member_names
             )
             self.query = self.query.join(Household.family_members).filter(names_queries)
+
+        if self.num_family_members is not None:
+            num_family_members_queries = QueryBuilder.generate_or_query(
+                lambda num: func.count(Person.id) == int(num),
+                self.num_family_members
+            )
+            self.query = self.query.join(Household.family_members).group_by(Household).having(num_family_members_queries)
 
         query_results_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in self.query]
         return query_results_json
