@@ -45,6 +45,7 @@ def person_saved(empty_household_saved):
 @pytest.fixture
 def family1():
     # HDB
+    # Total 4x
     # 2x Adults (married)
     # 2x Teenager Student
     # - Total Annual Income: $60,000
@@ -62,6 +63,7 @@ def family1():
 @pytest.fixture
 def family2():
     # Landed
+    # Total: 4x
     # 2x Adults (married)
     # 1x Teenager Student
     # 1x Adult Student
@@ -78,6 +80,7 @@ def family2():
 @pytest.fixture
 def family3():
     # Condo
+    # Total: 6x
     # 1x Employed Elder
     # 2x Adults (married)
     # 3x Unemployed Teenager
@@ -97,6 +100,7 @@ def family3():
 @pytest.fixture
 def family4():
     # HDB
+    # Total: 5x
     # 2x Unemployed Elder
     # 1x Adult (widowed)
     # 2x Teenager
@@ -113,5 +117,23 @@ def family4():
 
 
 @pytest.fixture
-def all_families(family1, family2, family3, family4):
+def family5():
+    # Landed
+    # Total: 4x
+    # 1x Unemployed Elder
+    # 2x Unemployed Adult
+    # 1x Employed Adult
+    # - Total Annual Income: $25000
+    household = HouseholdBuilder().landed().create_and_write()
+
+    elder_unemployed = PersonBuilder(household).unemployed().elder().create_and_write()                                 # noqa: F841
+    adult_employed = PersonBuilder(household).gender_female().separated().employed(25000).adult().create_and_write()    # noqa: F841
+    adult_unemployed1 = PersonBuilder(household).unemployed().adult().create_and_write()                                # noqa: F841
+    adult_unemployed2 = PersonBuilder(household).unemployed().adult().create_and_write()                                # noqa: F841
+
+    return household
+
+
+@pytest.fixture
+def all_families(family1, family2, family3, family4, family5):
     return locals().values()
