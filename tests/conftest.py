@@ -133,6 +133,7 @@ def family5():
 
     return household
 
+
 @pytest.fixture
 def family6():
     # Landed

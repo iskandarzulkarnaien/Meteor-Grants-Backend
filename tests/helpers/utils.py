@@ -87,7 +87,7 @@ class PersonBuilder():
     def baby(self, age=None):
         if not age:
             age = randint(1, 7)
-        
+
         self.person.date_of_birth = Utils.get_date_of_birth_from_age(age, years=False)
 
         self.person.occupation_type = 'Unemployed'
