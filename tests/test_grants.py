@@ -246,6 +246,44 @@ def test_search_for_household_by_num_family_members_multiple_nums_success(client
     assert received_households_json == expected_households_json
 
 
+# def test_search_for_household_by_num_baby_success(client, all_families):
+#     pass
+
+
+# def test_search_for_household_by_num_baby_multiple_num_success(client, all_families):
+#     pass
+
+
+def test_search_for_household_by_num_child_success(client, all_families, family2):
+    data = {
+        'NumChildren': [1]
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family2]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    assert received_households_json == expected_households_json
+
+
+def test_search_for_household_by_num_child_multiple_num_success(client, all_families, family2, family3):
+    data = {
+        'NumChildren': [1, 3]
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family2, family3]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    assert received_households_json == expected_households_json
+
+
 def test_search_for_household_by_num_adults_success(client, all_families, family4):
     data = {
         'NumAdults': [1]
@@ -364,6 +402,36 @@ def test_search_for_household_by_total_annual_income_multiple_pairs_success(clie
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
+
+# '''
+# Tests for API 4 & 5
+
+# Note: API 5 is essentially a restricted version of API 4, which returns only the valid family members rather than the entire household
+
+# Therefore, we can use these tests to check that API 4 correctly returns valid households when passed multiple search parameters
+# (in the form of the various grant criteria)
+
+# These tests can also be used to check API 5 by passing a flag to indicate to return only the valid family members
+# '''
+
+# def test_search_for_household_by_student_encouragement_bonus_success(client, all_families):
+#     pass
+
+
+# def test_search_for_household_by_multigeneration_scheme_success(client, all_families):
+#     pass
+
+
+# def test_search_for_household_by_elder_bonus_success(client, all_families):
+#     pass
+
+
+# def test_search_for_household_by_baby_sunshine_grant_success(client, all_families):
+#     pass
+
+
+# def test_search_for_household_by_yolo_gst_grant_success(client, all_families):
+#     pass
 
 
 # Other Tests: Tests for spouse-to-spouse relationship
