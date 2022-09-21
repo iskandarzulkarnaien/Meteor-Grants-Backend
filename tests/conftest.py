@@ -41,13 +41,14 @@ def person_saved(empty_household_saved):
     return PersonBuilder(empty_household_saved).create_and_write()
 
 
-# TODO: Find better names for the below fixtures
+# TODO: Rename these Household Fixtures. Follows naming convention: '<household_type>_<family members...>_<total annual income>_family'
 @pytest.fixture
 def family1():
+    # HDB
     # 2x Adults (married)
     # 2x Teenager Student
     # - Total Annual Income: $60,000
-    household = HouseholdBuilder().create_and_write()
+    household = HouseholdBuilder().hdb().create_and_write()
 
     # Note: Intentionally suppress unused variable warning as these variable assignments make the code more readable
     husband = PersonBuilder(household).gender_male().married().employed(30000).adult().create_and_write()   # noqa: F841
@@ -59,11 +60,12 @@ def family1():
 
 @pytest.fixture
 def family2():
+    # Landed
     # 2x Adults (married)
     # 1x Teenager Student
     # 1x Adult Student
     # - Total Annual Income: $180,000
-    household = HouseholdBuilder().create_and_write()
+    household = HouseholdBuilder().landed().create_and_write()
 
     husband = PersonBuilder(household).gender_male().married().employed(80000).adult().create_and_write()   # noqa: F841
     wife = PersonBuilder(household).gender_female().married().employed(100000).adult().create_and_write()   # noqa: F841
@@ -74,11 +76,12 @@ def family2():
 
 @pytest.fixture
 def family3():
+    # Condo
     # 1x Employed Elder
     # 2x Adults (married)
     # 1x Unemployed Teenager
     # - Total Annual Income: $90,000
-    household = HouseholdBuilder().create_and_write()
+    household = HouseholdBuilder().condo().create_and_write()
 
     elder_employed = PersonBuilder(household).gender_male().employed(20000).elder().create_and_write()      # noqa: F841
     husband = PersonBuilder(household).gender_male().married().employed(40000).adult().create_and_write()   # noqa: F841

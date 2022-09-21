@@ -146,13 +146,16 @@ class HouseholdBuilder():
 
     # Household Type related
     def landed(self):
-        pass
+        self.household.housing_type = 'Landed'
+        return self
 
     def condo(self):
-        pass
+        self.household.housing_type = 'Condominium'
+        return self
 
     def hdb(self):
-        pass
+        self.household.housing_type = 'HDB'
+        return self
 
     def add_person(self, person):
         pass
