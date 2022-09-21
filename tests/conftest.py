@@ -101,7 +101,7 @@ def family4():
     # 1x Adult (widowed)
     # 2x Teenager
     # - Total Annual Income: $30,000
-    household = HouseholdBuilder().condo().create_and_write()
+    household = HouseholdBuilder().hdb().create_and_write()
 
     elder_unemployed1 = PersonBuilder(household).gender_male().unemployed().elder().create_and_write()      # noqa: F841
     elder_unemployed2 = PersonBuilder(household).gender_female().unemployed().elder().create_and_write()    # noqa: F841
