@@ -8,14 +8,20 @@ class Household(db.Model):
     housing_type = db.Column(db.String, nullable=False)
     family_members = db.relationship('Person', back_populates='household')
 
+    # Validations
+
     @validates('housing_type')
     def validate_housing_type(self, _, housing_type):
         assert housing_type in Household.valid_housing_types()
         return housing_type
 
+    # Valid Types
+
     @staticmethod
     def valid_housing_types():
         return {'Landed', 'Condominium', 'HDB'}
+
+    # Other Methods
 
     def to_json(self, excludes=[], family_excludes=[]):
         data = {
@@ -46,6 +52,8 @@ class Person(db.Model):
 
     household_id = db.Column(db.Integer, db.ForeignKey('household.id'), nullable=False)
     household = db.relationship('Household', back_populates='family_members')
+
+    # Validations
 
     @validates('gender')
     def validate_gender(self, _, gender):
@@ -80,6 +88,8 @@ class Person(db.Model):
         assert date_of_birth_converted <= datetime.today().date()
         return date_of_birth_converted
 
+    # Valid Types
+
     @staticmethod
     def valid_genders():
         return {'M', 'F'}
@@ -91,6 +101,8 @@ class Person(db.Model):
     @staticmethod
     def valid_occupation_types():
         return {'Unemployed', 'Student', 'Employed'}
+
+    # Other Methods
 
     def to_json(self, excludes=[]):
         data = {
