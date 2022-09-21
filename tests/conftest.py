@@ -88,3 +88,8 @@ def family3():
     wife = PersonBuilder(household).gender_female().married().employed(30000).adult().create_and_write()    # noqa: F841
     teen_unemployed = PersonBuilder(household).unemployed().teenager().create_and_write()                   # noqa: F841
     return household
+
+
+@pytest.fixture
+def all_families(family1, family2, family3):
+    return locals().values()
