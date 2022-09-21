@@ -80,17 +80,38 @@ def family3():
     # Condo
     # 1x Employed Elder
     # 2x Adults (married)
-    # 1x Unemployed Teenager
+    # 3x Unemployed Teenager
     # - Total Annual Income: $90,000
     household = HouseholdBuilder().condo().create_and_write()
 
-    elder_employed = PersonBuilder(household).gender_male().employed(20000).elder().create_and_write()      # noqa: F841
-    husband = PersonBuilder(household).gender_male().married().employed(40000).adult().create_and_write()   # noqa: F841
-    wife = PersonBuilder(household).gender_female().married().employed(30000).adult().create_and_write()    # noqa: F841
-    teen_unemployed = PersonBuilder(household).unemployed().teenager().create_and_write()                   # noqa: F841
+    elder_employed = PersonBuilder(household).gender_male().employed(20000).elder().create_and_write()              # noqa: F841
+    husband = PersonBuilder(household).gender_male().married().employed(40000).adult().create_and_write()           # noqa: F841
+    wife = PersonBuilder(household).gender_female().married(husband).employed(30000).adult().create_and_write()     # noqa: F841
+    teen_unemployed1 = PersonBuilder(household).unemployed().teenager().create_and_write()                          # noqa: F841
+    teen_unemployed2 = PersonBuilder(household).unemployed().teenager().create_and_write()                          # noqa: F841
+    teen_unemployed3 = PersonBuilder(household).unemployed().teenager().create_and_write()                          # noqa: F841
+
     return household
 
 
 @pytest.fixture
-def all_families(family1, family2, family3):
+def family4():
+    # HDB
+    # 2x Unemployed Elder
+    # 1x Adult (widowed)
+    # 2x Teenager
+    # - Total Annual Income: $30,000
+    household = HouseholdBuilder().condo().create_and_write()
+
+    elder_unemployed1 = PersonBuilder(household).gender_male().unemployed().elder().create_and_write()      # noqa: F841
+    elder_unemployed2 = PersonBuilder(household).gender_female().unemployed().elder().create_and_write()    # noqa: F841
+    wife = PersonBuilder(household).gender_female().widowed().employed(30000).adult().create_and_write()    # noqa: F841
+    teen_unemployed1 = PersonBuilder(household).unemployed().teenager().create_and_write()                  # noqa: F841
+    teen_unemployed2 = PersonBuilder(household).unemployed().teenager().create_and_write()                  # noqa: F841
+
+    return household
+
+
+@pytest.fixture
+def all_families(family1, family2, family3, family4):
     return locals().values()
