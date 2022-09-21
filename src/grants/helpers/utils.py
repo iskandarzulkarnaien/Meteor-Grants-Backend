@@ -107,6 +107,15 @@ class QueryBuilder():
                 [limits.split() for limits in self.total_annual_income_limits]
             )
             self.query = self.query.filter(total_income_queries)
+        
+        if self.num_children:
+            num_children_queries = QueryBuilder.generate_or_query(
+                lambda num: func.count(Person.id) == int(num),
+                self.num_children
+            )
+            self.query = self.query.join(Household.family_members) \
+                .filter(Person.date_of_birth > DateHelper.date_years_ago(18)) \
+                .group_by(Household).having(num_children_queries)
 
         query_results_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in self.query]
         return query_results_json
