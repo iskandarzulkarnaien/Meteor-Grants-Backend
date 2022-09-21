@@ -136,7 +136,47 @@ def test_list_all_households_success_multiple_households(client, family1, family
 
     assert received_households_json == database_households_json
 
-# Other Tests
+
+# TODO: Rename all tests to follow convention 'test_<endpoint name>_<test scenario>_<success or fail>
+
+
+# Tests for API 4
+def test_search_for_household_by_no_params_return_all_success(client, all_families):
+    data = {}
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+    expected_households_json = [household.to_json(excludes=['ID']) for household in Household.query.all()]
+
+    assert received_households_json == expected_households_json
+
+
+@pytest.mark.parametrize('housing_type', Household.valid_housing_types())
+def test_search_for_household_by_household_type_success(client, all_families, housing_type):
+    data = {
+        'HouseholdTypes': [housing_type]
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+    expected_households_json = [household.to_json(excludes=['ID']) for household in Household.query.filter_by(housing_type=housing_type)]
+
+    assert received_households_json == expected_households_json
+
+
+def test_search_for_household_by_household_type_multiple_types_success(client, all_families):
+    data = {
+        'HouseholdTypes': ['HDB', 'Landed']
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+    expected_households_json = [household.to_json(excludes=['ID']) for household in Household.query.filter(Household.housing_type.in_(['HDB', 'Landed']))]
+
+    assert received_households_json == expected_households_json
 
 
 # Tests for spouse-to-spouse relationship
