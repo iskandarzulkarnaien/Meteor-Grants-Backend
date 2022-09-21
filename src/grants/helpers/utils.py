@@ -1,4 +1,5 @@
-from grants.models import Household
+from grants.models import Household, Person
+from sqlalchemy import or_
 
 
 class QueryBuilder():
@@ -61,5 +62,17 @@ class QueryBuilder():
         if self.household_types:
             self.query = self.query.filter(Household.housing_type.in_(self.household_types))
 
+        if self.family_member_names:
+            names_queries = QueryBuilder.generate_or_query(
+                lambda name: Household.family_members.any(Person.name.like(f'%{name}%')),
+                self.family_member_names
+            )
+            self.query = self.query.join(Household.family_members).filter(names_queries)
+
         query_results_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in self.query]
         return query_results_json
+
+    @staticmethod
+    def generate_or_query(query_function, items):
+        queries = [query_function(item) for item in items]
+        return or_(*queries)
