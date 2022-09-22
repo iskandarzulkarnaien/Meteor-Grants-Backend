@@ -18,11 +18,15 @@ The project uses the Python Flask framework for routing and handling requests an
 
 For testing and code cleanliness, the following libraries are used:
 
-`tox` - Integrates with GitHub Actions to automatically run tests for Windows and Ubuntu environments
+`tox` - Integrates with GitHub Actions to automatically run tests for Windows and Ubuntu environments.
 
-`pytest` - Testing framework for writing tests
+`pytest` - Testing framework for writing tests.
 
-`flake8` - Python linting tool to enforce good code style
+`flake8` - Python linting tool to enforce good code style.
+
+Project Management is done via GitHub issues, with to-dos and current tasks or problems faced documented in the [Issue Tracker](https://github.com/iskandarzulkarnaien/Meteor-Grants-Backend/issues).
+
+The project utilizes two primary working branches: `main` and `dev`. Branch protection rules have been set up to forbid direct pushes to `main`. Merging is instead performed via pull requests, which have been set up to require that all status checks pass and at least one approving review has been given (this requirement is overridden due to being the only developer for this project).
 
 ## Project Setup
 
@@ -181,16 +185,18 @@ Note: Depending on context, "Params" may refer to either the data items to be re
     
     Params:
         
-        String: 'HouseholdType'
-        String: 'Family Member Name'
-        Integer: 'Num Family Members'
-        Integer: 'Num Baby'
-        Integer: 'Num Child'
-        Integer: 'Num Adults'
-        Integer: 'Num Elder'
-        Integer: 'Num Teenage Students'
-        Integer: 'Total Annual Income'
+        String[]: 'HouseholdTypes'
+        String[]: 'Family Member Names'
+        Integer[]: 'FamilyMembersLimits'
+        Integer[]: 'NumBabiesLimits'
+        Integer[]: 'NumChildrenLimits'
+        Integer[]: 'NumAdultsLimits'
+        Integer[]: 'NumEldersLimits'
+        Integer[]: 'NumTeenageStudentsLimits'
+        Integer[]: 'TotalAnnualIncomeLimits'
 
+        [Note: 'limits' is of format [lower_limit, upper_limit]. A value of 0 indicates unbounded]
+        [Example: [1, 0] represents at least one]
         [Assumption: Search params are not given in the assignment docs. I have included a list of search params I believe are useful, especially if they are related to the grants]
     
     Response Format:
@@ -209,7 +215,7 @@ Note: Depending on context, "Params" may refer to either the data items to be re
     
     Params:
 
-        String: 'Grant Type' => {'Student Encouragement Bonus', 'Multigeneration Scheme', 'Elder Bonus', 'Baby Sunshine Grant', 'YOLO GST Grant'}
+        String: 'GrantType' => {'Student Encouragement Bonus', 'Multigeneration Scheme', 'Elder Bonus', 'Baby Sunshine Grant', 'YOLO GST Grant'}
 
     Response Format:
 
@@ -280,8 +286,53 @@ This section details the various grant schemes outlined in the assignment docume
     Qualifying:
     - All members
 
+## Project Architecture
+
+The project is structured into two main folders: `src` for source code and `tests` for test related code. Helper packages have also been defined within the respective folders for reusable shared logic.
+
 ## Database Schema
 
 The database schema is as shown in the following diagram:
 
 ![Schema Diagram](./readme_assets/schema_diagram.png)<br>
+
+## Helpers and Utils
+Several helpers and utilities classes have been designed to facilitate in either the working functionality of the application or automated testing. The following section showcases several noteworthy classes that utilize the [Builder Design Pattern](https://refactoring.guru/design-patterns/builder).
+
+## HouseholdBuilder / PersonBuilder
+The `HouseholdBuilder` and `PersonBuilder` class facilitates modular construction of `Households` and `Persons` for testing purposes.
+
+```python
+# Example to showcase creation of household with husband and wife and two teenage students.
+household = HouseholdBuilder().hdb().create_and_write()
+
+husband = PersonBuilder(household).name('Bob').gender_male().married().employed(30000).adult().create_and_write()
+wife = PersonBuilder(household).name('Alice').gender_female().married(husband).employed(30000).adult().create_and_write()
+teen_student1 = PersonBuilder(household).name('Cody').student().teenager().create_and_write()
+teen_student2 = PersonBuilder(household).name('Dany').student().teenager().create_and_write()
+```
+
+As a future improvement, these classes could instead be shifted to the `/src` directory and used as the exclusive method of instantiating a `person` instance. This has the effect of also resolving the [spouse-to-spouse relationship issue](#notable-issues).
+
+## QueryBuilder
+The `QueryBuilder` class facilitates the modular construction of an SQL query to search for `Households` and `Persons` from the database.
+
+```python
+# Example to showcase creation of search query for 'HDB' households with annual income less than $200,000
+query = QueryBuilder().set_household_types(['HDB']).set_total_annual_income_limits([0, 200000]).generate_query()
+```
+
+## Future Improvements
+
+Some possible improvements for the future of the project are as follows:
+
+1. More robust API endpoints (e.g. Edit, Update and Delete).
+2. Better logical organization of code.
+    - Some functionality can be better abstracted into their own classes or packages (`/helpers/utils.py/` and the `QueryBuilder` class is a good example of this)
+3. Make the code more DRY (Do not Repeat Yourself). There are quite a few instances of repeated logic, especially within the tests, that can be extracted into their own methods and reused.
+4. Stronger validations. Some sections (such as limits in search params), do not have validation to ensure that malformed data is rejected.
+
+## Notable Issues
+
+1. Enforcing one-to-one relationship for spouses in `Person` class.
+   - Issue explained and documented as  [Issues#9](https://github.com/iskandarzulkarnaien/Meteor-Grants-Backend/issues/9) on GitHub.
