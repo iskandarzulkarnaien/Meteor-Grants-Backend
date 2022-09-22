@@ -309,7 +309,7 @@ def test_search_for_household_by_num_teenage_students_success(client, all_famili
 
 def test_search_for_household_by_total_annual_income_success(client, all_families, family4, family5):
     data = {
-        'TotalAnnualIncomeLimits': ['20000 30000']
+        'TotalAnnualIncomeLimits': [20000, 30000]
     }
     response = client.post(url_for('households.search_households'), data=data)
     assert response.status_code == 200
@@ -317,21 +317,6 @@ def test_search_for_household_by_total_annual_income_success(client, all_familie
     received_households_json = json.loads(response.get_data())
 
     expected_households = [family4, family5]
-    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
-
-    assert received_households_json == expected_households_json
-
-
-def test_search_for_household_by_total_annual_income_multiple_pairs_success(client, all_families, family2, family3, family6):
-    data = {
-        'TotalAnnualIncomeLimits': ['160000 200000', '80000 100000']
-    }
-    response = client.post(url_for('households.search_households'), data=data)
-    assert response.status_code == 200
-
-    received_households_json = json.loads(response.get_data())
-
-    expected_households = [family2, family3, family6]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
@@ -347,6 +332,8 @@ Therefore, we can use these tests to check that API 4 correctly returns valid ho
 
 These tests can also be used to check API 5 by passing a flag to indicate to return only the valid family members
 '''
+
+
 def test_search_for_household_by_student_encouragement_bonus_entire_household_success(client, all_families, family1, family2):
     data = {
         'NumTeenageStudentsLimits': [1, 0],
