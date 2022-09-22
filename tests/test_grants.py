@@ -216,24 +216,9 @@ def test_search_for_household_by_family_member_name_multiple_names_success(clien
     assert received_households_json == expected_households_json
 
 
-def test_search_for_household_by_num_family_members_success(client, all_families, family3, family7):
+def test_search_for_household_by_num_family_members_success(client, all_families, family3, family4, family7):
     data = {
-        'NumFamilyMembers': [6]
-    }
-    response = client.post(url_for('households.search_households'), data=data)
-    assert response.status_code == 200
-
-    received_households_json = json.loads(response.get_data())
-
-    expected_households = [family3, family7]
-    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
-
-    assert received_households_json == expected_households_json
-
-
-def test_search_for_household_by_num_family_members_multiple_nums_success(client, all_families, family3, family4, family7):
-    data = {
-        'NumFamilyMembers': [5, 6]
+        'FamilyMembersLimits': [5, 6]
     }
     response = client.post(url_for('households.search_households'), data=data)
     assert response.status_code == 200
