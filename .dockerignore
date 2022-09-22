@@ -1,0 +1,19 @@
+# Byte-compiled files
+__pycache__/
+
+# Distribution / Packaging
+*.egg-info/
+
+# Environments
+venv/
+
+# Database
+**/*.sqlite
+
+# Testing
+.coverage
+.pytest_cache/
+.tox/
+
+# Workspace
+settings.json
