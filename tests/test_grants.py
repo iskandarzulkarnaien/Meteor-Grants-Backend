@@ -392,9 +392,23 @@ def test_search_for_household_by_grant_elder_bonus_entire_household_success(clie
     assert received_households_json == expected_households_json
 
 
-# def test_search_for_household_by_grant_elder_bonus_success(client, all_families):
-#     pass
+def test_search_for_household_by_grant_elder_bonus_success(client, all_families, family4):
+    data = {
+        'HouseholdTypes': ['HDB'],
+        'NumEldersLimits': [1, 0],
+        'GrantType': 'Elder Bonus'
+    }
+    response = client.post(url_for('households.search_households_grants'), data=data)
+    assert response.status_code == 200
 
+    received_households_json = json.loads(response.get_data())
+
+    criteria = [Person.is_elder]
+    expected_households = [family4]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse'], filter_person_criteria=criteria)
+                                for family in expected_households]
+
+    assert received_households_json == expected_households_json
 
 def test_search_for_household_by_grant_baby_sunshine_grant_entire_household_success(client, all_families, family6, family7):
     data = {
