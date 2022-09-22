@@ -140,6 +140,10 @@ class Person(db.Model):
     def is_teenager(self):
         return self.age_from_dob().get('years') <= 16
 
+    def is_baby(self):
+        age = self.age_from_dob()
+        return age.get('years') == 0 and age.get('months') < 8
+
     def age_from_dob(self):
         age = relativedelta(date.today(), self.date_of_birth)
         return {
