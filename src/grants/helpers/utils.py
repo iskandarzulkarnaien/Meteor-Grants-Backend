@@ -85,7 +85,8 @@ class QueryBuilder():
                 lambda name: Household.family_members.any(Person.name.like(f'%{name}%')),
                 self.family_member_names
             )
-            self.query = self.query.join(Household.family_members).filter(names_queries)
+            subquery = Household.query.join(Household.family_members).filter(names_queries)
+            subqueries.append(subquery)
 
         if self.num_family_members:
             num_family_members_queries = QueryBuilder.generate_or_query(
