@@ -219,7 +219,11 @@ class QueryBuilder():
             )).options(contains_eager(Household.family_members))
         elif grant == 'YOLO GST Grant':
             constraint = None
-
+        elif grant == 'Baby Sunshine Grant':
+            constraint = Household.query.outerjoin(Person, and_(
+                Person.household_id == Household.id,
+                Person.date_of_birth > DateHelper.date_months_ago(8)
+            )).options(contains_eager(Household.family_members))
         if constraint:
             query = QueryBuilder.query_reducer(query, constraint)
             # TODO: Figure out why this line is required for the query to function correctly
