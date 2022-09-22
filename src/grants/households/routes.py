@@ -85,8 +85,8 @@ def search_households():
     if num_children:
         query.set_num_children(num_children)
 
-    num_babies = request.form.getlist('NumBabies')
-    if num_babies:
-        query.set_num_babies(num_babies)
+    num_babies_limits = request.form.getlist('NumBabiesLimits')
+    if num_babies_limits:
+        query.set_limits_num_babies(num_babies_limits)
 
     return query.run()
