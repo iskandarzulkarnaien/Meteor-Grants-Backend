@@ -28,6 +28,10 @@ Project Management is done via GitHub issues, with to-dos and current tasks or p
 
 The project utilizes two primary working branches: `main` and `dev`. Branch protection rules have been set up to forbid direct pushes to `main`. Merging is instead performed via pull requests, which have been set up to require that all status checks pass and at least one approving review has been given (this requirement is overridden due to being the only developer for this project).
 
+The project has also been deployed to Heroku and can be found [here](https://meteor-grants-backend.herokuapp.com/).
+
+<em>Note: As there is no Frontend, a 404 is to be expected when visiting the URL.</em>
+
 ## Project Setup
 
 Before setting up the project, ensure you have a working installation of Python 3 on your system.
@@ -69,7 +73,7 @@ The flask web server is now ready to receive HTTP requests.
 
 ## How to use this project
 
-Once the flask web server is running, you may send HTTP requests with the appropriate verbs and data to the endpoints listed in the [API specifications](#api-endpoint-specifications).
+Once the flask web server is running, you may send HTTP requests with the appropriate verbs and data to the endpoints listed in the [API specifications](#api-endpoints-specifications).
 
 ## Running Automated Tests
 
@@ -321,6 +325,21 @@ The `QueryBuilder` class facilitates the modular construction of an SQL query to
 # Example to showcase creation of search query for 'HDB' households with annual income less than $200,000
 query = QueryBuilder().set_household_types(['HDB']).set_total_annual_income_limits([0, 200000]).generate_query()
 ```
+
+## Heroku Deployment
+
+The app has been deployed to Heroku and can be found [here](https://meteor-grants-backend.herokuapp.com/).
+
+<em>Note: As there is no Frontend, a 404 is to be expected when visiting the URL.</em>
+
+
+The deployment process involved the creation of a Procfile to start a `gunicorn` HTTP Server.
+
+```Procfile
+web: gunicorn run:app
+```
+
+The deployment initially failed due to a missing `gunicorn` import, which was difficult to debug due to Heroku returning a generic 503 error.
 
 ## Future Improvements
 
