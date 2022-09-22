@@ -431,8 +431,23 @@ def test_search_for_household_by_grant_yolo_gst_grant_entire_household_success(c
     assert received_households_json == expected_households_json
 
 
-# def test_search_for_household_by_grant_yolo_gst_grant_success(client, all_families):
-#     pass
+def test_search_for_household_by_grant_yolo_gst_grant_success(client, all_families, family1, family4):
+    data = {
+        'HouseholdTypes': ['HDB'],
+        'TotalAnnualIncomeLimits': [0, 200000],
+        'GrantType': 'YOLO GST Grant'
+    }
+    response = client.post(url_for('households.search_households_grants'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    criteria = []
+    expected_households = [family1, family4]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse'], filter_person_criteria=criteria)
+                                for family in expected_households]
+
+    assert received_households_json == expected_households_json
 
 
 # Other Tests: Tests for spouse-to-spouse relationship
