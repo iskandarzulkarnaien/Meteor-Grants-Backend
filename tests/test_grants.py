@@ -412,7 +412,7 @@ def test_search_for_household_by_grant_multigeneration_scheme_success(client, al
 
     received_households_json = json.loads(response.get_data())
 
-    criteria = [Person.is_elder]
+    criteria = []
     expected_households = [family3, family4, family5]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse'], filter_person_criteria=criteria)
                                 for family in expected_households]

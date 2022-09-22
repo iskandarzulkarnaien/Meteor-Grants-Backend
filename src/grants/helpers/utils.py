@@ -249,13 +249,9 @@ class QueryBuilder():
             query2 = QueryBuilder().set_limits_num_children([1, 0]).set_limits_num_elders([1, 0]) \
                 .set_total_annual_income_limits([0, 150000]).generate_query()
             unioned_query = query1.union(query2)
+            constraint = None
 
-            constraint = Household.query.outerjoin(Person, and_(
-                Person.household_id == Household.id,
-                Person.date_of_birth < DateHelper.date_years_ago(55)
-            )).options(contains_eager(Household.family_members))
-
-            final_query = QueryBuilder.query_reducer(unioned_query, constraint)
+            final_query = unioned_query
         if constraint:
             # TODO: Investigate why this line causes the SQL Logic to fail when removed.
             constraint = (list(constraint))
