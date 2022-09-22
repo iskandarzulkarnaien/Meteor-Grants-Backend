@@ -291,7 +291,6 @@ def test_search_for_household_by_num_elders_success(client, all_families, family
     assert received_households_json == expected_households_json
 
 
-
 def test_search_for_household_by_num_teenage_students_success(client, all_families, family1, family8):
     data = {
         'NumTeenageStudentsLimits': [2, 2]
@@ -349,6 +348,19 @@ def test_search_for_household_by_grant_student_encouragement_bonus_entire_househ
 
     assert received_households_json == expected_households_json
 
+
+# def test_search_for_household_by_grant_student_encouragement_bonus_success(client, all_families):
+#     pass
+
+
+# def test_search_for_household_by_grant_multigeneration_scheme_entire_household_success(client, all_families):
+#     pass
+
+
+# def test_search_for_household_by_grant_multigeneration_scheme_success(client, all_families):
+#     pass
+
+
 def test_search_for_household_by_grant_elder_bonus_entire_household_success(client, all_families, family4):
     data = {
         'HouseholdTypes': ['HDB'],
@@ -365,22 +377,33 @@ def test_search_for_household_by_grant_elder_bonus_entire_household_success(clie
     assert received_households_json == expected_households_json
 
 
+# def test_search_for_household_by_grant_elder_bonus_success(client, all_families):
 #     pass
 
 
-# def test_search_for_household_by_multigeneration_scheme_success(client, all_families):
+def test_search_for_household_by_grant_baby_sunshine_grant_entire_household_success(client, all_families, family6, family7):
+    data = {
+        'NumBabiesLimits': [1, 0]
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family6, family7]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    assert received_households_json == expected_households_json
+
+# def test_search_for_household_by_grant_baby_sunshine_grant_success(client, all_families):
 #     pass
 
 
-# def test_search_for_household_by_elder_bonus_success(client, all_families):
+# def test_search_for_household_by_grant_yolo_gst_grant_entire_household_success(client, all_families):
 #     pass
 
 
-# def test_search_for_household_by_baby_sunshine_grant_success(client, all_families):
-#     pass
-
-
-# def test_search_for_household_by_yolo_gst_grant_success(client, all_families):
+# def test_search_for_household_by_grant_yolo_gst_grant_success(client, all_families):
 #     pass
 
 
