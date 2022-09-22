@@ -51,6 +51,13 @@ def all_households():
 
 @households.route('/household/search', methods=['POST'])
 def search_households():
+    query = handle_search_query(request)
+    return query.run()
+
+
+# Helpers
+
+def handle_search_query(request):
     query = QueryBuilder()
 
     household_types = request.form.getlist('HouseholdTypes')
@@ -88,5 +95,4 @@ def search_households():
     num_babies_limits = request.form.getlist('NumBabiesLimits')
     if num_babies_limits:
         query.set_limits_num_babies(num_babies_limits)
-
-    return query.run()
+    return query
