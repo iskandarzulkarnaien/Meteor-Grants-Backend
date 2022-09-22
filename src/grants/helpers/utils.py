@@ -12,7 +12,11 @@ class QueryBuilder():
 
         self.household_types = []
         self.family_member_names = []
-        self.num_family_members = []
+
+        self.num_family_members_flag = False
+        self.min_num_family_members = None
+        self.max_num_family_members = None
+
         self.num_babies = []
         self.num_children = []
         self.num_adults = []
@@ -34,8 +38,12 @@ class QueryBuilder():
         self.family_member_names = names
         return self
 
-    def set_num_family_members(self, num):
-        self.num_family_members = num
+    def set_limits_num_family_members(self, limits):
+        self.num_family_members_flag = True
+
+        min_num, max_num = int(limits[0]), int(limits[1])
+        self.min_num_family_members = min_num if min_num else 0
+        self.max_num_family_members = max_num if max_num else 9999  # Arbitrarily large value. Unlikely that a family will have this many
         return self
 
     def set_num_babies(self, num):
@@ -88,12 +96,12 @@ class QueryBuilder():
             subquery = Household.query.join(Household.family_members).filter(names_queries)
             subqueries.append(subquery)
 
-        if self.num_family_members:
-            num_family_members_queries = QueryBuilder.generate_or_query(
-                lambda num: func.count(Person.id) == int(num),
-                self.num_family_members
+        if self.num_family_members_flag:
+            subquery = Household.query.join(Household.family_members).group_by(Household).having(
+                (func.count(Person.id) >= self.min_num_family_members) &
+                (func.count(Person.id) <= self.max_num_family_members)
             )
-            self.query = self.query.join(Household.family_members).group_by(Household).having(num_family_members_queries)
+            subqueries.append(subquery)
 
         if self.num_adults:
             num_adults_queries = QueryBuilder.generate_or_query(
