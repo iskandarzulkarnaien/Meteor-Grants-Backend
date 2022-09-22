@@ -425,16 +425,31 @@ def test_search_for_household_by_total_annual_income_multiple_pairs_success(clie
 
     assert received_households_json == expected_households_json
 
-# '''
-# Tests for API 4 & 5
 
-# Note: API 5 is essentially a restricted version of API 4, which returns only the valid family members rather than the entire household
+'''
+Tests for API 4 & 5
 
-# Therefore, we can use these tests to check that API 4 correctly returns valid households when passed multiple search parameters
-# (in the form of the various grant criteria)
+Note: API 5 is essentially a restricted version of API 4, which returns only the valid family members rather than the entire household
 
-# These tests can also be used to check API 5 by passing a flag to indicate to return only the valid family members
-# '''
+Therefore, we can use these tests to check that API 4 correctly returns valid households when passed multiple search parameters
+(in the form of the various grant criteria)
+
+These tests can also be used to check API 5 by passing a flag to indicate to return only the valid family members
+'''
+def test_search_for_household_by_student_encouragement_bonus_entire_household_success(client, all_families, family1, family2):
+    data = {
+        'TeenageStudentsLimits': [1, 0],
+        'TotalAnnualIncomeLimits': [0, 200000]
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family1, family2]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    assert received_households_json == expected_households_json
 
 # def test_search_for_household_by_student_encouragement_bonus_success(client, all_families):
 #     pass
