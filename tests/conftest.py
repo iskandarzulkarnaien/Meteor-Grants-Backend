@@ -103,7 +103,7 @@ def family4():
     # Total: 5x
     # 2x Unemployed Elder
     # 1x Adult (widowed)
-    # 2x Teenager
+    # 2x Unemployed Teenager
     # - Total Annual Income: $30,000
     household = HouseholdBuilder().hdb().create_and_write()
 
