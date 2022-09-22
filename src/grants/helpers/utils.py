@@ -180,19 +180,7 @@ class QueryBuilder():
 
     def run(self, grant=None):
         if grant:
-            if grant != 'Multigeneration Scheme':
-                constraint = QueryBuilder.process_grants(grant=grant)
-                if constraint:
-                    final_query = self.generate_query()
-                    if isinstance(final_query, list):
-                        final_query = Household.query
-                    final_query = QueryBuilder.query_reducer(final_query, constraint)
-                    # TODO: Figure out why this line is required for the query to function correctly
-                    constraint = (list(constraint))
-                else:
-                    final_query = self.generate_query()
-            else:
-                final_query = QueryBuilder.process_grants(grant=grant)
+            final_query = QueryBuilder.process_grants(grant=grant)
         else:
             final_query = self.generate_query()
         return [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in final_query]
@@ -224,22 +212,37 @@ class QueryBuilder():
     @staticmethod
     def process_grants(grant):
         if grant == 'Student Encouragement Bonus':
+            query = QueryBuilder().set_limits_num_teenage_students([1, 0]).set_total_annual_income_limits([0, 200000]).generate_query()
+
             constraint = Household.query.outerjoin(Person, and_(
                 Person.household_id == Household.id,
                 (Person.date_of_birth >= DateHelper.date_years_ago(16)) & (Person.occupation_type == 'Student')
             )).options(contains_eager(Household.family_members))
+
+            final_query = QueryBuilder.query_reducer(query, constraint)
         elif grant == 'YOLO GST Grant':
-            constraint = None
+            query = QueryBuilder().set_household_types(['HDB']).set_total_annual_income_limits([0, 200000]).generate_query()
+            constraint = None  # Explicitly set to none for clarity that this grant does not have a constraint
+            
+            final_query = query
         elif grant == 'Baby Sunshine Grant':
+            query = QueryBuilder().set_limits_num_babies([1, 0]).generate_query()
+
             constraint = Household.query.outerjoin(Person, and_(
                 Person.household_id == Household.id,
                 Person.date_of_birth > DateHelper.date_months_ago(8)
             )).options(contains_eager(Household.family_members))
+
+            final_query = QueryBuilder.query_reducer(query, constraint)
         elif grant == 'Elder Bonus':
+            query = QueryBuilder().set_limits_num_elders([1, 0]).set_household_types(['HDB']).generate_query()
+
             constraint = Household.query.outerjoin(Person, and_(
                 Person.household_id == Household.id,
                 Person.date_of_birth < DateHelper.date_years_ago(55)
             )).options(contains_eager(Household.family_members))
+
+            final_query = QueryBuilder.query_reducer(query, constraint)
         elif grant == 'Multigeneration Scheme':
             query1 = QueryBuilder().set_limits_num_adults([1, 0]).set_limits_num_elders([1, 0]) \
                         .set_total_annual_income_limits([0, 150000]).generate_query()
@@ -253,9 +256,10 @@ class QueryBuilder():
             )).options(contains_eager(Household.family_members))
 
             final_query = QueryBuilder.query_reducer(unioned_query, constraint)
+        if constraint:
+            # TODO: Investigate why this line causes the SQL Logic to fail when removed.
             constraint = (list(constraint))
-            return final_query
-        return constraint
+        return final_query
 
 
 class DateHelper():
