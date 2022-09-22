@@ -144,7 +144,7 @@ TODO: Mock the expected results where possible instead of using the same code us
 '''
 
 
-# Tests for API 4
+# Tests for API 4 - Single Param
 def test_search_for_household_by_no_params_return_all_success(client, all_families):
     data = {}
     response = client.post(url_for('households.search_households'), data=data)
@@ -321,18 +321,7 @@ def test_search_for_household_by_total_annual_income_success(client, all_familie
     assert received_households_json == expected_households_json
 
 
-'''
-Tests for API 4 & 5
-
-Note: API 5 is essentially a restricted version of API 4, which returns only the valid family members rather than the entire household
-
-Therefore, we can use these tests to check that API 4 correctly returns valid households when passed multiple search parameters
-(in the form of the various grant criteria)
-
-These tests can also be used to check API 5 by passing a flag to indicate to return only the valid family members
-'''
-
-
+# Tests for API 4 - Multiple Params
 def test_search_for_household_by_grant_student_encouragement_bonus_entire_household_success(client, all_families, family1, family2):
     data = {
         'NumTeenageStudentsLimits': [1, 0],
@@ -349,6 +338,54 @@ def test_search_for_household_by_grant_student_encouragement_bonus_entire_househ
     assert received_households_json == expected_households_json
 
 
+def test_search_for_household_by_grant_elder_bonus_entire_household_success(client, all_families, family4):
+    data = {
+        'HouseholdTypes': ['HDB'],
+        'NumEldersLimits': [1, 0]
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family4]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    assert received_households_json == expected_households_json
+
+
+def test_search_for_household_by_grant_baby_sunshine_grant_entire_household_success(client, all_families, family6, family7):
+    data = {
+        'NumBabiesLimits': [1, 0]
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family6, family7]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    assert received_households_json == expected_households_json
+
+
+def test_search_for_household_by_grant_yolo_gst_grant_entire_household_success(client, all_families, family1, family4):
+    data = {
+        'HouseholdTypes': ['HDB'],
+        'TotalAnnualIncomeLimits': [0, 200000]
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family1, family4]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    assert received_households_json == expected_households_json
+
+
+# Tests for API 5
 def test_search_for_household_by_grant_student_encouragement_bonus_success(client, all_families, family1, family2):
     data = {
         'GrantType': 'Student Encouragement Bonus'
@@ -383,22 +420,6 @@ def test_search_for_household_by_grant_multigeneration_scheme_success(client, al
     assert received_households_json == expected_households_json
 
 
-def test_search_for_household_by_grant_elder_bonus_entire_household_success(client, all_families, family4):
-    data = {
-        'HouseholdTypes': ['HDB'],
-        'NumEldersLimits': [1, 0]
-    }
-    response = client.post(url_for('households.search_households'), data=data)
-    assert response.status_code == 200
-
-    received_households_json = json.loads(response.get_data())
-
-    expected_households = [family4]
-    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
-
-    assert received_households_json == expected_households_json
-
-
 def test_search_for_household_by_grant_elder_bonus_success(client, all_families, family4):
     data = {
         'GrantType': 'Elder Bonus'
@@ -412,20 +433,6 @@ def test_search_for_household_by_grant_elder_bonus_success(client, all_families,
     expected_households = [family4]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse'], filter_person_criteria=criteria)
                                 for family in expected_households]
-
-    assert received_households_json == expected_households_json
-
-def test_search_for_household_by_grant_baby_sunshine_grant_entire_household_success(client, all_families, family6, family7):
-    data = {
-        'NumBabiesLimits': [1, 0]
-    }
-    response = client.post(url_for('households.search_households'), data=data)
-    assert response.status_code == 200
-
-    received_households_json = json.loads(response.get_data())
-
-    expected_households = [family6, family7]
-    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
 
@@ -443,22 +450,6 @@ def test_search_for_household_by_grant_baby_sunshine_grant_success(client, all_f
     expected_households = [family6, family7]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse'], filter_person_criteria=criteria)
                                 for family in expected_households]
-
-    assert received_households_json == expected_households_json
-
-
-def test_search_for_household_by_grant_yolo_gst_grant_entire_household_success(client, all_families, family1, family4):
-    data = {
-        'HouseholdTypes': ['HDB'],
-        'TotalAnnualIncomeLimits': [0, 200000]
-    }
-    response = client.post(url_for('households.search_households'), data=data)
-    assert response.status_code == 200
-
-    received_households_json = json.loads(response.get_data())
-
-    expected_households = [family1, family4]
-    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
 
