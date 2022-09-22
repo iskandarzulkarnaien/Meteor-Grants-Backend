@@ -171,5 +171,22 @@ def family7():
 
 
 @pytest.fixture
-def all_families(family1, family2, family3, family4, family5, family6, family7):
+def family8():
+    # HDB
+    # Total: 4x
+    # 2x Adults (married)
+    # 2x Teenager Student
+    # - Total Annual Income: $240000
+    household = HouseholdBuilder().hdb().create_and_write()
+
+    husband = PersonBuilder(household).gender_male().married().employed(100000).adult().create_and_write()          # noqa: F841
+    wife = PersonBuilder(household).gender_female().married(husband).employed(140000).adult().create_and_write()    # noqa: F841
+    teen_student1 = PersonBuilder(household).student().teenager().create_and_write()                                # noqa: F841
+    teen_student2 = PersonBuilder(household).student().teenager().create_and_write()                                # noqa: F841
+
+    return household
+
+
+@pytest.fixture
+def all_families(family1, family2, family3, family4, family5, family6, family7, family8):
     return locals().values()
