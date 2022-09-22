@@ -368,12 +368,27 @@ def test_search_for_household_by_grant_student_encouragement_bonus_success(clien
     assert received_households_json == expected_households_json
 
 
-# def test_search_for_household_by_grant_multigeneration_scheme_entire_household_success(client, all_families):
-#     pass
+def test_search_for_household_by_grant_multigeneration_scheme_success(client, all_families, family3, family4, family5):
+    data = {
+        'GrantType': 'Multigeneration Scheme'
+    }
+    response = client.post(url_for('households.search_households_grants'), data=data)
+    assert response.status_code == 200
 
+    received_households_json = json.loads(response.get_data())
 
-# def test_search_for_household_by_grant_multigeneration_scheme_success(client, all_families):
-#     pass
+    criteria = [Person.is_elder]
+    expected_households = [family3, family4, family5]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse'], filter_person_criteria=criteria)
+                                for family in expected_households]
+
+    print(json.dumps(received_households_json, indent=4))
+    print(json.dumps(expected_households_json, indent=4))
+    print(len(received_households_json), [len(item.get('Family Members')) for item in received_households_json])
+    print(len(expected_households_json), [len(item.get('Family Members')) for item in expected_households_json])
+
+    assert received_households_json == expected_households_json
+
 
 
 def test_search_for_household_by_grant_elder_bonus_entire_household_success(client, all_families, family4):

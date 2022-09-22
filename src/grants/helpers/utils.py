@@ -108,7 +108,7 @@ class QueryBuilder():
         self.max_total_annual_income = max_num if max_num else float('inf')
         return self
 
-    def return_final_query(self):
+    def generate_query(self):
         # Construct query with every param, then run it and return the result
         subqueries = []
 
@@ -179,11 +179,22 @@ class QueryBuilder():
         return Household.query.all()
 
     def run(self, grant=None):
-        final_query = self.return_final_query()
-
         if grant:
-            final_query = QueryBuilder.process_grants(final_query, grant=grant)
-
+            if grant != 'Multigeneration Scheme':
+                constraint = QueryBuilder.process_grants(grant=grant)
+                if constraint:
+                    final_query = self.generate_query()
+                    if isinstance(final_query, list):
+                        final_query = Household.query
+                    final_query = QueryBuilder.query_reducer(final_query, constraint)
+                    # TODO: Figure out why this line is required for the query to function correctly
+                    constraint = (list(constraint))
+                else:
+                    final_query = self.generate_query()
+            else:
+                final_query = QueryBuilder.process_grants(grant=grant)
+        else:
+            final_query = self.generate_query()
         return [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in final_query]
 
     @staticmethod
@@ -211,7 +222,7 @@ class QueryBuilder():
         return reduced_query
 
     @staticmethod
-    def process_grants(query, grant):
+    def process_grants(grant):
         if grant == 'Student Encouragement Bonus':
             constraint = Household.query.outerjoin(Person, and_(
                 Person.household_id == Household.id,
@@ -229,12 +240,22 @@ class QueryBuilder():
                 Person.household_id == Household.id,
                 Person.date_of_birth < DateHelper.date_years_ago(55)
             )).options(contains_eager(Household.family_members))
+        elif grant == 'Multigeneration Scheme':
+            query1 = QueryBuilder().set_limits_num_adults([1, 0]).set_limits_num_elders([1, 0]) \
+                        .set_total_annual_income_limits([0, 150000]).generate_query()
+            query2 = QueryBuilder().set_limits_num_children([1, 0]).set_limits_num_elders([1, 0]) \
+                        .set_total_annual_income_limits([0, 150000]).generate_query()
+            unioned_query = query1.union(query2)
 
-        if constraint:
-            query = QueryBuilder.query_reducer(query, constraint)
-            # TODO: Figure out why this line is required for the query to function correctly
+            constraint = Household.query.outerjoin(Person, and_(
+                Person.household_id == Household.id,
+                Person.date_of_birth < DateHelper.date_years_ago(55)
+            )).options(contains_eager(Household.family_members))
+
+            final_query = QueryBuilder.query_reducer(unioned_query, constraint)
             constraint = (list(constraint))
-        return query
+            return final_query
+        return constraint
 
 
 class DateHelper():
