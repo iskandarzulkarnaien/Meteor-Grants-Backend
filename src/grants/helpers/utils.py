@@ -33,7 +33,7 @@ class QueryBuilder():
         self.min_num_elders = None
         self.max_num_elders = None
 
-        self.teenage_students_flag = False
+        self.num_teenage_students_flag = False
         self.min_num_teenage_students = None
         self.max_num_teenage_students = None
 
@@ -90,8 +90,8 @@ class QueryBuilder():
         return self
 
     # TODO: Validate min <= max
-    def set_limits_teenage_students(self, limits):
-        self.teenage_students_flag = True
+    def set_limits_num_teenage_students(self, limits):
+        self.num_teenage_students_flag = True
 
         min_num, max_num = int(limits[0]), int(limits[1])
         self.min_num_teenage_students = min_num if min_num else 0
@@ -145,7 +145,7 @@ class QueryBuilder():
                 .having(QueryBuilder.num_people_in_range_inclusive_constraint(self.min_num_elders, self.max_num_elders))
             subqueries.append(subquery)
 
-        if self.teenage_students_flag:
+        if self.num_teenage_students_flag:
             subquery = Household.query.join(Household.family_members) \
                 .filter((Person.date_of_birth >= DateHelper.date_years_ago(16)) & (Person.occupation_type == 'Student')) \
                 .group_by(Household).having(

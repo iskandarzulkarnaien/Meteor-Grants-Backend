@@ -292,31 +292,16 @@ def test_search_for_household_by_num_elders_success(client, all_families, family
 
 
 
-def test_search_for_household_by_num_teenage_students_success(client, all_families, family2):
+def test_search_for_household_by_num_teenage_students_success(client, all_families, family1, family8):
     data = {
-        'NumTeenageStudents': [1]
+        'NumTeenageStudentsLimits': [2, 2]
     }
     response = client.post(url_for('households.search_households'), data=data)
     assert response.status_code == 200
 
     received_households_json = json.loads(response.get_data())
 
-    expected_households = [family2]
-    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
-
-    assert received_households_json == expected_households_json
-
-
-def test_search_for_household_by_num_teenage_students_multiple_num_success(client, all_families, family1, family2, family8):
-    data = {
-        'NumTeenageStudents': [1, 2]
-    }
-    response = client.post(url_for('households.search_households'), data=data)
-    assert response.status_code == 200
-
-    received_households_json = json.loads(response.get_data())
-
-    expected_households = [family1, family2, family8]
+    expected_households = [family1, family8]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
@@ -364,7 +349,7 @@ These tests can also be used to check API 5 by passing a flag to indicate to ret
 '''
 def test_search_for_household_by_student_encouragement_bonus_entire_household_success(client, all_families, family1, family2):
     data = {
-        'TeenageStudentsLimits': [1, 0],
+        'NumTeenageStudentsLimits': [1, 0],
         'TotalAnnualIncomeLimits': [0, 200000]
     }
     response = client.post(url_for('households.search_households'), data=data)
