@@ -223,7 +223,7 @@ class QueryBuilder():
         elif grant == 'YOLO GST Grant':
             query = QueryBuilder().set_household_types(['HDB']).set_total_annual_income_limits([0, 200000]).generate_query()
             constraint = None  # Explicitly set to none for clarity that this grant does not have a constraint
-            
+
             final_query = query
         elif grant == 'Baby Sunshine Grant':
             query = QueryBuilder().set_limits_num_babies([1, 0]).generate_query()
@@ -245,9 +245,9 @@ class QueryBuilder():
             final_query = QueryBuilder.query_reducer(query, constraint)
         elif grant == 'Multigeneration Scheme':
             query1 = QueryBuilder().set_limits_num_adults([1, 0]).set_limits_num_elders([1, 0]) \
-                        .set_total_annual_income_limits([0, 150000]).generate_query()
+                .set_total_annual_income_limits([0, 150000]).generate_query()
             query2 = QueryBuilder().set_limits_num_children([1, 0]).set_limits_num_elders([1, 0]) \
-                        .set_total_annual_income_limits([0, 150000]).generate_query()
+                .set_total_annual_income_limits([0, 150000]).generate_query()
             unioned_query = query1.union(query2)
 
             constraint = Household.query.outerjoin(Person, and_(
