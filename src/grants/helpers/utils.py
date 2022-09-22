@@ -1,8 +1,9 @@
 from grants.models import Household, Person
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, and_
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from functools import reduce
+from sqlalchemy.orm import contains_eager
 
 
 class QueryBuilder():
@@ -107,7 +108,7 @@ class QueryBuilder():
         self.max_total_annual_income = max_num if max_num else float('inf')
         return self
 
-    def run(self, include_invalid_members=True):
+    def return_final_query(self):
         # Construct query with every param, then run it and return the result
         subqueries = []
 
@@ -174,13 +175,16 @@ class QueryBuilder():
             subqueries.append(subquery)
 
         if subqueries:
-            final_query = QueryBuilder.combine_queries(subqueries)
-        else:
-            final_query = Household.query.all()
+            return QueryBuilder.combine_queries(subqueries)
+        return Household.query.all()
 
-        query_results_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in final_query]
+    def run(self, grant=None):
+        final_query = self.return_final_query()
 
-        return query_results_json
+        if grant:
+            final_query = QueryBuilder.process_grants(final_query, grant=grant)
+
+        return [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in final_query]
 
     @staticmethod
     def generate_or_query(query_function, items):
@@ -196,14 +200,28 @@ class QueryBuilder():
 
     @staticmethod
     def combine_queries(queries):
-        def reducer(q1, q2):
-            stmt1 = q2.subquery()
-            # TODO: Investigate whether this lint issue can be fixed without breaking the app. To be done after grants API is fully implemented.
-            reduced_query = q1.outerjoin(stmt1, Household.id == stmt1.c.id).filter(stmt1.c.id != None)  # noqa: E711
-            return reduced_query
-
-        combined_queries = reduce(reducer, queries)
+        combined_queries = reduce(QueryBuilder.query_reducer, queries)
         return combined_queries
+
+    @staticmethod
+    def query_reducer(q1, q2):
+        stmt1 = q2.subquery()
+        # TODO: Investigate whether this lint issue can be fixed without breaking the app. To be done after grants API is fully implemented.
+        reduced_query = q1.outerjoin(stmt1, Household.id == stmt1.c.id).filter(stmt1.c.id != None)  # noqa: E711
+        return reduced_query
+
+    @staticmethod
+    def process_grants(query, grant):
+        if grant == 'Student Encouragement Bonus':
+            constraint = Household.query.outerjoin(Person, and_(
+                Person.household_id == Household.id,
+                (Person.date_of_birth >= DateHelper.date_years_ago(16)) & (Person.occupation_type == 'Student')
+            )).options(contains_eager(Household.family_members))
+            query = QueryBuilder.query_reducer(query, constraint)
+
+            # TODO: Figure out why this line is required for the query to function correctly
+            constraint = (list(constraint))
+        return query
 
 
 class DateHelper():
