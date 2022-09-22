@@ -349,8 +349,23 @@ def test_search_for_household_by_grant_student_encouragement_bonus_entire_househ
     assert received_households_json == expected_households_json
 
 
-# def test_search_for_household_by_grant_student_encouragement_bonus_success(client, all_families):
-#     pass
+def test_search_for_household_by_grant_student_encouragement_bonus_success(client, all_families, family1, family2):
+    data = {
+        'NumTeenageStudentsLimits': [1, 0],
+        'TotalAnnualIncomeLimits': [0, 200000],
+        'GrantType': 'Student Encouragement Bonus'
+    }
+    response = client.post(url_for('households.search_households_grants'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    criteria = [Person.is_student, Person.is_teenager]
+    expected_households = [family1, family2] 
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse'], filter_person_criteria=criteria) \
+        for family in expected_households]
+
+    assert received_households_json == expected_households_json
 
 
 # def test_search_for_household_by_grant_multigeneration_scheme_entire_household_success(client, all_families):
