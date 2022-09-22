@@ -137,6 +137,9 @@ class Person(db.Model):
     def is_student(self):
         return self.occupation_type == 'Student'
 
+    def is_elder(self):
+        return self.age_from_dob().get('years') > 55
+
     def is_teenager(self):
         return self.age_from_dob().get('years') <= 16
 
