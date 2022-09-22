@@ -381,7 +381,7 @@ def test_search_for_household_by_num_teenage_students_success(client, all_famili
     assert received_households_json == expected_households_json
 
 
-def test_search_for_household_by_num_teenage_students_multiple_num_success(client, all_families, family1, family2):
+def test_search_for_household_by_num_teenage_students_multiple_num_success(client, all_families, family1, family2, family8):
     data = {
         'NumTeenageStudents': [1, 2]
     }
@@ -390,7 +390,7 @@ def test_search_for_household_by_num_teenage_students_multiple_num_success(clien
 
     received_households_json = json.loads(response.get_data())
 
-    expected_households = [family1, family2]
+    expected_households = [family1, family2, family8]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
