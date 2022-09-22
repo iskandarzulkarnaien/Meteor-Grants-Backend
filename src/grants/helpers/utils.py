@@ -21,7 +21,10 @@ class QueryBuilder():
         self.min_num_babies = None
         self.max_num_babies = None
 
-        self.num_children = []
+        self.num_children_flag = False
+        self.min_num_children = None
+        self.max_num_children = None
+
         self.num_adults = []
         self.num_elders = []
 
@@ -57,9 +60,12 @@ class QueryBuilder():
         self.max_num_babies = max_num if max_num else 9999  # Arbitrarily large value. Unlikely that a family will have this many
         return self
 
-    def set_num_children(self, num):
-        self.num_children = num
-        return self
+    def set_limits_num_children(self, limits):
+        self.num_children_flag = True
+
+        min_num, max_num = int(limits[0]), int(limits[1])
+        self.min_num_children = min_num if min_num else 0
+        self.max_num_children = max_num if max_num else 9999  # Arbitrarily large value. Unlikely that a family will have this many
 
     def set_num_adults(self, num):
         self.num_adults = num
@@ -144,14 +150,11 @@ class QueryBuilder():
             )
             subqueries.append(subquery)
 
-        if self.num_children:
-            num_children_queries = QueryBuilder.generate_or_query(
-                lambda num: func.count(Person.id) == int(num),
-                self.num_children
-            )
-            self.query = self.query.join(Household.family_members) \
-                .filter(Person.date_of_birth > DateHelper.date_years_ago(18)) \
-                .group_by(Household).having(num_children_queries)
+        if self.num_children_flag:
+            subquery = Household.query.join(Household.family_members) \
+                .filter(Person.date_of_birth > DateHelper.date_years_ago(18)).group_by(Household) \
+                .having(QueryBuilder.num_people_in_range_inclusive_constraint(self.min_num_children, self.max_num_children))
+            subqueries.append(subquery)
 
         if self.num_babies_flag:
             subquery = Household.query.join(Household.family_members) \

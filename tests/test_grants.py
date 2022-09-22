@@ -246,46 +246,16 @@ def test_search_for_household_by_num_baby_success(client, all_families, family6)
     assert received_households_json == expected_households_json
 
 
-def test_search_for_household_by_num_baby_multiple_num_success(client, all_families, family6, family7):
+def test_search_for_household_by_num_children_success(client, all_families, family1, family3, family4, family8):
     data = {
-        'NumBabies': [1, 3]
+        'NumChildrenLimits': [2, 3]
     }
     response = client.post(url_for('households.search_households'), data=data)
     assert response.status_code == 200
 
     received_households_json = json.loads(response.get_data())
 
-    expected_households = [family6, family7]
-    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
-
-    assert received_households_json == expected_households_json
-
-
-def test_search_for_household_by_num_child_success(client, all_families, family2, family6):
-    data = {
-        'NumChildren': [1]
-    }
-    response = client.post(url_for('households.search_households'), data=data)
-    assert response.status_code == 200
-
-    received_households_json = json.loads(response.get_data())
-
-    expected_households = [family2, family6]
-    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
-
-    assert received_households_json == expected_households_json
-
-
-def test_search_for_household_by_num_child_multiple_num_success(client, all_families, family2, family3, family6):
-    data = {
-        'NumChildren': [1, 3]
-    }
-    response = client.post(url_for('households.search_households'), data=data)
-    assert response.status_code == 200
-
-    received_households_json = json.loads(response.get_data())
-
-    expected_households = [family2, family3, family6]
+    expected_households = [family1, family3, family4, family8]
     expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
 
     assert received_households_json == expected_households_json
