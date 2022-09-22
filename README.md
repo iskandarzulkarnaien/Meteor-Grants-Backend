@@ -45,7 +45,7 @@ This project was developed and tested on Python 3.10.
 ```bash
 $ git clone https://github.com/iskandarzulkarnaien/Meteor-Grants-Backend.git
 ```
-1. Setup a python virtual environment. If you are unsure of how to setup a virtual environment on your system, [here](https://www.geeksforgeeks.org/creating-python-virtual-environment-windows-linux/) is a handy guide to doing so. 
+2. Setup a python virtual environment. If you are unsure of how to setup a virtual environment on your system, [here](https://www.geeksforgeeks.org/creating-python-virtual-environment-windows-linux/) is a handy guide to doing so. 
 
 ```bash
 # For Windows using git bash
