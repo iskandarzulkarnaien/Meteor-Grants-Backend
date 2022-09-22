@@ -334,7 +334,7 @@ These tests can also be used to check API 5 by passing a flag to indicate to ret
 '''
 
 
-def test_search_for_household_by_student_encouragement_bonus_entire_household_success(client, all_families, family1, family2):
+def test_search_for_household_by_grant_student_encouragement_bonus_entire_household_success(client, all_families, family1, family2):
     data = {
         'NumTeenageStudentsLimits': [1, 0],
         'TotalAnnualIncomeLimits': [0, 200000]
