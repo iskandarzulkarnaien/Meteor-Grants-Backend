@@ -29,7 +29,9 @@ class QueryBuilder():
         self.min_num_adults = None
         self.max_num_adults = None
 
-        self.num_elders = []
+        self.num_elders_flag = False
+        self.min_num_elders = None
+        self.max_num_elders = None
 
         self.teenage_students_flag = False
         self.min_num_teenage_students = None
@@ -79,8 +81,12 @@ class QueryBuilder():
         self.max_num_adults = max_num if max_num else 9999  # Arbitrarily large value. Unlikely that a family will have this many
         return self
 
-    def set_num_elders(self, num):
-        self.num_elders = num
+    def set_limits_num_elders(self, limits):
+        self.num_elders_flag = True
+
+        min_num, max_num = int(limits[0]), int(limits[1])
+        self.min_num_elders = min_num if min_num else 0
+        self.max_num_elders = max_num if max_num else 9999  # Arbitrarily large value. Unlikely that a family will have this many
         return self
 
     # TODO: Validate min <= max
@@ -133,14 +139,11 @@ class QueryBuilder():
                 .having(QueryBuilder.num_people_in_range_inclusive_constraint(self.min_num_adults, self.max_num_adults))
             subqueries.append(subquery)
 
-        if self.num_elders:
-            num_elders_queries = QueryBuilder.generate_or_query(
-                lambda num: func.count(Person.id) == int(num),
-                self.num_elders
-            )
-            self.query = self.query.join(Household.family_members) \
-                .filter(Person.date_of_birth < DateHelper.date_years_ago(55)) \
-                .group_by(Household).having(num_elders_queries)
+        if self.num_elders_flag:
+            subquery = Household.query.join(Household.family_members) \
+                .filter(Person.date_of_birth < DateHelper.date_years_ago(55)).group_by(Household) \
+                .having(QueryBuilder.num_people_in_range_inclusive_constraint(self.min_num_elders, self.max_num_elders))
+            subqueries.append(subquery)
 
         if self.teenage_students_flag:
             subquery = Household.query.join(Household.family_members) \

@@ -69,9 +69,9 @@ def search_households():
     if num_adults_limits:
         query.set_limits_num_adults(num_adults_limits)
 
-    num_elders = request.form.getlist('NumElders')
-    if num_elders:
-        query.set_num_elders(num_elders)
+    num_elders_limits = request.form.getlist('NumEldersLimits')
+    if num_elders_limits:
+        query.set_limits_num_elders(num_elders_limits)
 
     teenage_students_limits = request.form.getlist('TeenageStudentsLimits')
     if teenage_students_limits:
