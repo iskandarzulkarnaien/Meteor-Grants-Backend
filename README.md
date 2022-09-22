@@ -30,6 +30,8 @@ The project utilizes two primary working branches: `main` and `dev`. Branch prot
 
 The project has also been deployed to Heroku and can be found [here](https://meteor-grants-backend.herokuapp.com/).
 
+<em>Note: As there is no Frontend, a 404 is to be expected when visiting the URL.</em>
+
 ## Project Setup
 
 Before setting up the project, ensure you have a working installation of Python 3 on your system.
@@ -327,6 +329,9 @@ query = QueryBuilder().set_household_types(['HDB']).set_total_annual_income_limi
 ## Heroku Deployment
 
 The app has been deployed to Heroku and can be found [here](https://meteor-grants-backend.herokuapp.com/).
+
+<em>Note: As there is no Frontend, a 404 is to be expected when visiting the URL.</em>
+
 
 The deployment process involved the creation of a Procfile to start a `gunicorn` HTTP Server.
 
