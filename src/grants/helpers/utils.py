@@ -198,7 +198,8 @@ class QueryBuilder():
     def combine_queries(queries):
         def reducer(q1, q2):
             stmt1 = q2.subquery()
-            reduced_query = q1.outerjoin(stmt1, Household.id == stmt1.c.id).filter(stmt1.c.id != None)
+            # TODO: Investigate whether this lint issue can be fixed without breaking the app. To be done after grants API is fully implemented.
+            reduced_query = q1.outerjoin(stmt1, Household.id == stmt1.c.id).filter(stmt1.c.id != None)  # noqa: E711
             return reduced_query
 
         combined_queries = reduce(reducer, queries)
