@@ -25,7 +25,10 @@ class QueryBuilder():
         self.min_num_children = None
         self.max_num_children = None
 
-        self.num_adults = []
+        self.num_adults_flag = False
+        self.min_num_adults = None
+        self.max_num_adults = None
+
         self.num_elders = []
 
         self.teenage_students_flag = False
@@ -66,9 +69,14 @@ class QueryBuilder():
         min_num, max_num = int(limits[0]), int(limits[1])
         self.min_num_children = min_num if min_num else 0
         self.max_num_children = max_num if max_num else 9999  # Arbitrarily large value. Unlikely that a family will have this many
+        return self
 
-    def set_num_adults(self, num):
-        self.num_adults = num
+    def set_limits_num_adults(self, limits):
+        self.num_adults_flag = True
+
+        min_num, max_num = int(limits[0]), int(limits[1])
+        self.min_num_adults = min_num if min_num else 0
+        self.max_num_adults = max_num if max_num else 9999  # Arbitrarily large value. Unlikely that a family will have this many
         return self
 
     def set_num_elders(self, num):
@@ -116,14 +124,14 @@ class QueryBuilder():
             )
             subqueries.append(subquery)
 
-        if self.num_adults:
-            num_adults_queries = QueryBuilder.generate_or_query(
-                lambda num: func.count(Person.id) == int(num),
-                self.num_adults
-            )
-            self.query = self.query.join(Household.family_members) \
-                .filter((Person.date_of_birth <= DateHelper.date_years_ago(18)) & (Person.date_of_birth >= DateHelper.date_years_ago(55))) \
-                .group_by(Household).having(num_adults_queries)
+        if self.num_adults_flag:
+            subquery = Household.query.join(Household.family_members) \
+                .filter(
+                    (Person.date_of_birth <= DateHelper.date_years_ago(18)) &
+                    (Person.date_of_birth >= DateHelper.date_years_ago(55))
+                ).group_by(Household) \
+                .having(QueryBuilder.num_people_in_range_inclusive_constraint(self.min_num_adults, self.max_num_adults))
+            subqueries.append(subquery)
 
         if self.num_elders:
             num_elders_queries = QueryBuilder.generate_or_query(

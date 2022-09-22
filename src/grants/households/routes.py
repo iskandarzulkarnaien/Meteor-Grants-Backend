@@ -65,9 +65,9 @@ def search_households():
     if family_members_limits:
         query.set_limits_num_family_members(family_members_limits)
 
-    num_adults = request.form.getlist('NumAdults')
-    if num_adults:
-        query.set_num_adults(num_adults)
+    num_adults_limits = request.form.getlist('NumAdultsLimits')
+    if num_adults_limits:
+        query.set_limits_num_adults(num_adults_limits)
 
     num_elders = request.form.getlist('NumElders')
     if num_elders:
