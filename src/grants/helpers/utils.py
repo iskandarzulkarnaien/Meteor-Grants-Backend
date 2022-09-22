@@ -144,7 +144,11 @@ class QueryBuilder():
                 .filter(Person.date_of_birth > DateHelper.date_months_ago(8)) \
                 .group_by(Household).having(num_babies_queries)
 
-        final_query = QueryBuilder.combine_queries(subqueries)
+        if subqueries:
+            final_query = QueryBuilder.combine_queries(subqueries)
+        else:
+            final_query = Household.query.all()
+
         query_results_json = [household.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for household in final_query]
 
         return query_results_json
