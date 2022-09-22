@@ -1,8 +1,10 @@
+from functools import reduce
 from grants import db
 from sqlalchemy.orm import validates
-from datetime import datetime
+from datetime import datetime, date
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func, select
+from dateutil.relativedelta import relativedelta
 
 
 class Household(db.Model):
@@ -40,12 +42,23 @@ class Household(db.Model):
 
     # Other Methods
 
-    def to_json(self, excludes=[], family_excludes=[]):
+    def to_json(self, excludes=[], family_excludes=[], filter_person_criteria=[]):
         data = {
             'ID': self.id,
             'HouseholdType': self.housing_type,
-            'Family Members': [family_member.to_json(excludes=family_excludes) for family_member in self.family_members]
+            'Family Members': []
         }
+
+        for family_member in self.family_members:
+            if filter_person_criteria:
+                def combine_function(fn1, fn2):
+                    return lambda x: fn1(x) and fn2(x)
+
+                test_all_criteria_fn = reduce(combine_function, filter_person_criteria)
+                if not test_all_criteria_fn(family_member):
+                    continue
+            data['Family Members'].append(family_member.to_json(excludes=family_excludes))
+
         for item in excludes:
             data.pop(item)
         return data
@@ -120,6 +133,19 @@ class Person(db.Model):
         return {'Unemployed', 'Student', 'Employed'}
 
     # Other Methods
+
+    def is_student(self):
+        return self.occupation_type == 'Student'
+
+    def is_teenager(self):
+        return self.age_from_dob().get('years') <= 16
+
+    def age_from_dob(self):
+        age = relativedelta(date.today(), self.date_of_birth)
+        return {
+            'years': age.years,
+            'months': age.months
+        }
 
     def to_json(self, excludes=[]):
         data = {
