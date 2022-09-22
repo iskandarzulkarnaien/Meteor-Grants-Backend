@@ -17,7 +17,10 @@ class QueryBuilder():
         self.min_num_family_members = None
         self.max_num_family_members = None
 
-        self.num_babies = []
+        self.num_babies_flag = False
+        self.min_num_babies = None
+        self.max_num_babies = None
+
         self.num_children = []
         self.num_adults = []
         self.num_elders = []
@@ -46,8 +49,12 @@ class QueryBuilder():
         self.max_num_family_members = max_num if max_num else 9999  # Arbitrarily large value. Unlikely that a family will have this many
         return self
 
-    def set_num_babies(self, num):
-        self.num_babies = num
+    def set_limits_num_babies(self, limits):
+        self.num_babies_flag = True
+
+        min_num, max_num = int(limits[0]), int(limits[1])
+        self.min_num_babies = min_num if min_num else 0
+        self.max_num_babies = max_num if max_num else 9999  # Arbitrarily large value. Unlikely that a family will have this many
         return self
 
     def set_num_children(self, num):
@@ -146,14 +153,11 @@ class QueryBuilder():
                 .filter(Person.date_of_birth > DateHelper.date_years_ago(18)) \
                 .group_by(Household).having(num_children_queries)
 
-        if self.num_babies:
-            num_babies_queries = QueryBuilder.generate_or_query(
-                lambda num: func.count(Person.id) == int(num),
-                self.num_babies
-            )
-            self.query = self.query.join(Household.family_members) \
-                .filter(Person.date_of_birth > DateHelper.date_months_ago(8)) \
-                .group_by(Household).having(num_babies_queries)
+        if self.num_babies_flag:
+            subquery = Household.query.join(Household.family_members) \
+                .filter(Person.date_of_birth > DateHelper.date_months_ago(8)).group_by(Household) \
+                .having(QueryBuilder.num_people_in_range_inclusive_constraint(self.min_num_babies, self.max_num_babies))
+            subqueries.append(subquery)
 
         if subqueries:
             final_query = QueryBuilder.combine_queries(subqueries)
@@ -168,6 +172,13 @@ class QueryBuilder():
     def generate_or_query(query_function, items):
         queries = [query_function(item) for item in items]
         return or_(*queries)
+
+    @staticmethod
+    def num_people_in_range_inclusive_constraint(min_num, max_num):
+        return (
+            (func.count(Person.id) >= int(min_num)) &
+            (func.count(Person.id) <= int(max_num))
+        )
 
     @staticmethod
     def combine_queries(queries):

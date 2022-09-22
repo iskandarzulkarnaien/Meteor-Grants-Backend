@@ -233,7 +233,7 @@ def test_search_for_household_by_num_family_members_success(client, all_families
 
 def test_search_for_household_by_num_baby_success(client, all_families, family6):
     data = {
-        'NumBabies': [1]
+        'NumBabiesLimits': [0, 1]
     }
     response = client.post(url_for('households.search_households'), data=data)
     assert response.status_code == 200
