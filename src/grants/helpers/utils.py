@@ -75,8 +75,10 @@ class QueryBuilder():
     def run(self, include_invalid_members=True):
         # Construct query with every param, then run it and return the result
         subqueries = []
+
         if self.household_types:
-            self.query = self.query.filter(Household.housing_type.in_(self.household_types))
+            subquery = Household.query.filter(Household.housing_type.in_(self.household_types))
+            subqueries.append(subquery)
 
         if self.family_member_names:
             names_queries = QueryBuilder.generate_or_query(
