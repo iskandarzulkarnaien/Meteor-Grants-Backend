@@ -55,8 +55,14 @@ def search_households():
     return query.run()
 
 
-# Helpers
+@households.route('/household/search/grants', methods=['POST'])
+def search_households_grants():
+    query = handle_search_query(request)
+    grant_type = request.form.get('GrantType')
+    return query.run(grant=grant_type)
 
+
+# Helpers
 def handle_search_query(request):
     query = QueryBuilder()
 
