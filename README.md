@@ -45,7 +45,7 @@ This project was developed and tested on Python 3.10.
 ```bash
 $ git clone https://github.com/iskandarzulkarnaien/Meteor-Grants-Backend.git
 ```
-2. Setup a python virtual environment. If you are unsure of how to do setup a virtual environment on your system, [here](https://www.geeksforgeeks.org/creating-python-virtual-environment-windows-linux/) is a handy guide to doing so. 
+1. Setup a python virtual environment. If you are unsure of how to setup a virtual environment on your system, [here](https://www.geeksforgeeks.org/creating-python-virtual-environment-windows-linux/) is a handy guide to doing so. 
 
 ```bash
 # For Windows using git bash
@@ -99,7 +99,7 @@ The test environment has been setup to automatically create and tear down the te
 The following section outlines the requirements of the API as understood by myself and lists any assumptions made. It also defines keywords that may be referenced later on in the document or within the project code.
 
 ## Definitions
-The following is a list of definitions used both in this README and within the app to refer to persons of various ages.
+The following is a list of definitions used both in this README and within the app to refer to persons of various ages or occupation types.
 
 Note that some categories may intentionally overlap.
 
@@ -129,6 +129,7 @@ Note: Depending on context, "Params" may refer to either the data items to be re
     Route: `'/household/{id}/family/new'`
     
     Type: `'POST'`
+
     Params:
     
         String: 'Name'
@@ -347,7 +348,7 @@ Some possible improvements for the future of the project are as follows:
 
 1. More robust API endpoints (e.g. Edit, Update and Delete).
 2. Better logical organization of code.
-    - Some functionality can be better abstracted into their own classes or packages (`/helpers/utils.py/` and the `QueryBuilder` class is a good example of this)
+    - Some functionality can be better abstracted into their own classes or packages (`/helpers/utils.py/` and the `QueryBuilder` class is a good example of this).
 3. Make the code more DRY (Do not Repeat Yourself). There are quite a few instances of repeated logic, especially within the tests, that can be extracted into their own methods and reused.
 4. Stronger validations. Some sections (such as limits in search params), do not have validation to ensure that malformed data is rejected.
 
