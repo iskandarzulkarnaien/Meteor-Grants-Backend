@@ -395,12 +395,25 @@ def test_search_for_household_by_grant_baby_sunshine_grant_entire_household_succ
 
     assert received_households_json == expected_households_json
 
+
 # def test_search_for_household_by_grant_baby_sunshine_grant_success(client, all_families):
 #     pass
 
 
-# def test_search_for_household_by_grant_yolo_gst_grant_entire_household_success(client, all_families):
-#     pass
+def test_search_for_household_by_grant_yolo_gst_grant_entire_household_success(client, all_families, family1, family4):
+    data = {
+        'HouseholdTypes': ['HDB'],
+        'TotalAnnualIncomeLimits': [0, 200000]
+    }
+    response = client.post(url_for('households.search_households'), data=data)
+    assert response.status_code == 200
+
+    received_households_json = json.loads(response.get_data())
+
+    expected_households = [family1, family4]
+    expected_households_json = [family.to_json(excludes=['ID'], family_excludes=['ID', 'Spouse']) for family in expected_households]
+
+    assert received_households_json == expected_households_json
 
 
 # def test_search_for_household_by_grant_yolo_gst_grant_success(client, all_families):
